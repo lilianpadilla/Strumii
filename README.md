@@ -74,8 +74,9 @@ Check that the Subabase Studio dashboard is accessible at [http://127.0.0.1:5432
 
 Deploy the Prisma migrations to the Supabase database:
 
+<!-- npx prisma migrate dev --name init # only needed for the first time initialization -->
+
 ```bash
-npx prisma migrate dev --name init # only needed for the first time initialization
 npm run migrate-dev
 ```
 

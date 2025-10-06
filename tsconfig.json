@@ -1,0 +1,57 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
+    "allowJs": true,
+    "checkJs": false,
+    "skipLibCheck": true,
+    "strict": false,
+    // "noImplicitAny": false,
+    // "noImplicitReturns": false,         // ✅ Allows functions to not return a value
+    // "noUnusedLocals": false,            // ✅ Allows unused variables without error
+    // "noUnusedParameters": false,        // ✅ Allows unused function parameters
+    // "noUncheckedIndexedAccess": false,  // ✅ Allows accessing possibly undefined object keys
+    // "skipLibCheck": true,               // ✅ Avoids checking type definitions in node_modules
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "noUncheckedIndexedAccess": true,
+    "baseUrl": ".",
+    "paths": {
+      "~/*": [
+        "./src/*"
+      ],
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
+  },
+  "include": [
+    ".eslintrc.cjs",
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/*.cjs",
+    "**/*.mjs",
+    ".next/types/**/*.ts",
+    "next.config.js"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

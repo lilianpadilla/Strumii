@@ -1,0 +1,6 @@
+model Profile {
+  id                String      @id @db.Uuid
+  name              String      @default("")
+
+  @@map("profile")
+}

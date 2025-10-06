@@ -9,8 +9,8 @@ import { Profile } from "@prisma/client";
 import { Providers } from "~/providers";
 
 export const metadata: Metadata = {
-  title: 'APP HOLDER',
-  description: 'DESCRIPTION HOLDER',
+  title: 'Strumii',
+  description: 'AI-Assisted Music Learning App',
 }
 
 const font = Roboto({

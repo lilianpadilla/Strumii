@@ -1,4 +1,4 @@
-package com.redforest.redforest;
+package com.strumii.app;
 
 import com.getcapacitor.BridgeActivity;
 

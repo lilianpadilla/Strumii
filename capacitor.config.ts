@@ -5,8 +5,8 @@ import type { CapacitorConfig } from '@capacitor/cli';
 const devUrl = process.env.CAP_SERVER_URL;
 
 const config: CapacitorConfig = {
-  appId: 'com.placeholder.app',
-  appName: 'PlaceHolder',
+  appId: 'com.strumii.app',
+  appName: 'Strumii',
   webDir: 'public',
   server: "http://192.168.1.199:3000"
     ? {

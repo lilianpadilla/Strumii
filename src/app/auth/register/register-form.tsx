@@ -195,7 +195,7 @@ export default function RegisterForm() {
               <Button
                 variant="ghost"
                 className="text-sm btn btn-ghost text-primary hover:underline mt-4"
-                onClick={() => router.push("/session/login")}
+                onClick={() => router.push("/auth/login")}
               >
                 Already have an account? Log in
               </Button>

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from '~/utils/supabase/client';
-import { AuthCard } from '~/app/session/auth-form';
+import { AuthCard } from '~/app/auth/auth-form';
 import { Input } from '~/components/ui/input';
 import { Button } from '~/components/ui/button';
 import { Label } from '~/components/ui/label';
@@ -40,8 +40,8 @@ const Page = () => {
       console.log(error.message)
     } else {
       // Redirect to dashboard
-      console.log("redirecting to access")
-      router.push("/access");
+      console.log("redirecting to dashboard")
+      router.push("/dashboard");
     }
 
   }
@@ -86,14 +86,14 @@ const Page = () => {
           <Button
             variant="ghost"
             className="text-sm btn btn-ghost text-primary hover:underline"
-            onClick={() => router.push("/session/register")}
+            onClick={() => router.push("/auth/register")}
           >
             Register Account
           </Button> 
           <Button
             variant="ghost"
             className="text-sm btn btn-ghost text-primary hover:underline"
-            onClick={() => router.push("/session/forgot-password")}
+            onClick={() => router.push("/auth/forgot-password")}
           >
             Forgot Password?
           </Button>

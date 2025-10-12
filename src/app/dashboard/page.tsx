@@ -1,7 +1,7 @@
 export const dynamic = "force-dynamic";
 
 import { createClient } from '~/utils/supabase/server';
-import { Profile, Role, Course } from "@prisma/client";
+import { Profile } from "@prisma/client";
 import { caller } from '~/server/api/server';
 import { redirect } from "next/navigation";
 

@@ -36,7 +36,7 @@ const ForgotPassword = () => {
      * This email contains a link which sends the user back to your application.
      */
     const { data, error } = await supabase.auth
-      .resetPasswordForEmail(email, { redirectTo: `${location.origin}/session/reset-password` });
+      .resetPasswordForEmail(email, { redirectTo: `${location.origin}/auth/reset-password` });
 
     if (error) {
       toast.error("Error sending reset link.");
@@ -69,7 +69,7 @@ const ForgotPassword = () => {
 
           <CardFooter>
             <CardAction>
-              <Button variant="ghost" className="w-full" onClick={() => router.push("/session/login")}>
+              <Button variant="ghost" className="w-full" onClick={() => router.push("/auth/login")}>
                 Back to Login
               </Button>
             </CardAction>

@@ -45,11 +45,13 @@ export default function Navbar(props: NavbarProps) {
   const supabase = createClient();
   const { setTheme } = useTheme();
 
+  console.log("Navbar profile:", profile);
+
   async function logOut() {
     await supabase.auth.signOut();
     fetch(`${location.origin}/api/auth/logout`, { method: "POST", headers: { "Content-Type": "application/json" } });
     router.refresh();
-    router.push("/session/login");
+    router.push("/auth/login");
   }
   function guardedPush(url: string) {
     router.push(url);
@@ -157,11 +159,11 @@ export default function Navbar(props: NavbarProps) {
             <DropdownMenuContent align="end" className="w-56">
               {profile ? (
                 <>
-                  <DropdownMenuItem onClick={() => guardedPush("/access/account")}>
+                  <DropdownMenuItem onClick={() => guardedPush("/account")}>
                     <User className="mr-2 h-4 w-4" /> Profile
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => guardedPush("/access")}>
+                  <DropdownMenuItem onClick={() => guardedPush("/dashboard")}>
                     <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
@@ -171,10 +173,10 @@ export default function Navbar(props: NavbarProps) {
                 </>
               ) : (
                 <>
-                  <DropdownMenuItem onClick={() => guardedPush("/session/login")}>
+                  <DropdownMenuItem onClick={() => guardedPush("/auth/login")}>
                     <LogIn className="mr-2 h-4 w-4" /> Log In
                   </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => guardedPush("/session/register")}>
+                  <DropdownMenuItem onClick={() => guardedPush("/auth/register")}>
                     <PlusCircle className="mr-2 h-4 w-4" /> Register
                   </DropdownMenuItem>
                 </>

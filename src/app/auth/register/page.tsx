@@ -1,6 +1,6 @@
 "use server";
 
-import RegisterForm from '~/app/session/register/register-form';
+import RegisterForm from './register-form';
 
 export default async function Page() {
   return (

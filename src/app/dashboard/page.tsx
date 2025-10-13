@@ -10,7 +10,7 @@ export default async function Dashboard() {
   return (
     <div className="flex w-full justify-center items-center h-[80vh]">
       <h1>Access Page - You are logged in!</h1>
-      <h2>Your profile information will be displayed here.</h2>
+      <h3>Your profile information will be displayed here.</h3>
     </div>
   )
 

@@ -1,0 +1,14 @@
+model Lesson {
+  id          String   @id @db.Uuid
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+  expDuration Int      @default(0) // in minutes
+  profile     Profile @relation(fields: [profileId], references: [id])
+  profileId   String   @db.Uuid
+
+  @@map("lesson")
+}

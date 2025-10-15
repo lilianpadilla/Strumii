@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "migrate-dev": "prisma migrate reset && npx tsx prisma/seedTriggers.ts",
+    "migrate-dev": "prisma migrate reset && prisma migrate dev && npx tsx prisma/seedTriggers.ts",
     "seed": "prisma db push --force-reset && prisma db seed && npx tsx prisma/seedTriggers.ts",
     "vercel-build": "prisma generate && prisma migrate deploy && tsx prisma/seedTriggers.ts && next build"
   },

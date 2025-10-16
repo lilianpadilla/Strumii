@@ -5,7 +5,7 @@
 const fs = require('fs')
 const path = require('path')
 
-import { PrismaClient, Prisma, Profile} from '@prisma/client'
+import { PrismaClient, Prisma, Profile, Lesson} from '@prisma/client'
 
 // Create Supabase client
 import { createClient } from '@supabase/supabase-js'
@@ -41,6 +41,19 @@ const getProfiles = (): Prisma.ProfileCreateInput[] => [
   },
 ];
 
+const getLessons = (): Prisma.LessonCreateInput[] => [
+  {
+    id: "00000000-0000-0000-0000-000000000001",
+    title: "Lesson 1",
+    description: "This is lesson 1",
+    createdAt: yesterday,
+    updatedAt: yesterday,
+    completed: false,
+    expDuration: 10,
+    profile: { connect: {id: "00000000-0000-0000-0000-000000000001"} }
+  }
+];
+
 const main = async () => {
 
   // Login the supabase client
@@ -63,7 +76,18 @@ const main = async () => {
     ))
   );
 
+  const lessons = await Promise.all(
+    getLessons().map((lesson) => client.lesson.upsert(
+      {
+        where: { id: lesson.id },
+        update: { ...lesson },
+        create: { ...lesson },
+      }
+    ))
+  );
+
   console.log(profiles)
+  console.log(lessons)
 };
 
 main()

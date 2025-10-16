@@ -1,4 +1,5 @@
 "use server";
+
 import React from "react";
 import {
   Select,
@@ -18,7 +19,12 @@ import {
 } from "@/components/ui/card"
 import { Button } from "~/components/ui/button";
 
+import { caller } from '~/server/api/server';
+
 export default async function Page() {
+
+    let lesson = await caller.lesson.getLesson();
+    console.log(lesson);
 
     return (
         <>
@@ -59,7 +65,7 @@ export default async function Page() {
                 <a href="https://media.tenor.com/aSkdq3IU0g0AAAAM/laughing-cat.gif" className="block">
                 <Card className="cursor-pointer hover:shadow-lg hover:scale-103 transition-transform duration-100">
                     <CardHeader>
-                        <CardTitle>Chord Progression: Em - D - C - B</CardTitle>
+                        <CardTitle>{lesson.title}</CardTitle>
                         <CardDescription>03-13-2025 : 2:12PM</CardDescription>
                         <CardDescription>10 Minute Lesson</CardDescription>
                         <CardDescription className="text-blue-500"><b>Review: Confident</b></CardDescription>

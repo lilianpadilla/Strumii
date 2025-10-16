@@ -6,12 +6,11 @@ export const profileRouter = createTRPCRouter({
   updateProfile: privateProcedure
   .input(
     z.object({
-      profileId: z.string(),
       name: z.string().optional(),
     })
   )
   .mutation(async ({ input, ctx }) => {
-    const { profileId, ...fieldsToUpdate } = input;
+    const { ...fieldsToUpdate } = input;
 
     // Filter out undefined fields (only update provided ones)
     const data = Object.fromEntries(
@@ -20,7 +19,7 @@ export const profileRouter = createTRPCRouter({
 
     // Update only provided fields
     return await ctx.db.profile.update({
-      where: { id: profileId },
+      where: { id: ctx.user?.id },
       data,
     });
   }),

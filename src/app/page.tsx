@@ -17,8 +17,10 @@ export default function Page() {
           <Button variant="secondary" className="flex justify-center w-4/5 h-80 text-2xl"> 
             Start Lesson!
           </Button> 
-          <Button variant="secondary" className="flex justify-center w-4/5 h-40 text-2xl"> 
-            Lesson History
+          <Button variant="secondary" className="flex justify-center w-4/5 h-40 text-2xl">
+            <Link href="/lesson-history">
+              Lesson History
+            </Link> 
           </Button> 
         </div>
       </div>     

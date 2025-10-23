@@ -136,66 +136,7 @@ export default function Navbar(props: NavbarProps) {
             </>
           )}
 
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Sun suppressHydrationWarning={true} className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"/>
-                <Moon suppressHydrationWarning={true} className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                <span className="sr-only">Toggle theme</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setTheme("light")}>
-                Light
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("dark")}>
-                Dark
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("system")}>
-                System
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu> */}
-
           {/* User dropdown */}
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="rounded-full">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={avatar} alt="User" />
-                  <AvatarFallback>
-                    <User suppressHydrationWarning={true} className="h-4 w-4" />
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              {profile ? (
-                <>
-                  <DropdownMenuItem onClick={() => guardedPush("/account")}>
-                    <User className="mr-2 h-4 w-4" /> Profile
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => guardedPush("/dashboard")}>
-                    <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={logOut}>
-                    <LogOut className="mr-2 h-4 w-4" /> Logout
-                  </DropdownMenuItem>
-                </>
-              ) : (
-                <>
-                  <DropdownMenuItem onClick={() => guardedPush("/auth/login")}>
-                    <LogIn className="mr-2 h-4 w-4" /> Log In
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => guardedPush("/auth/register")}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Register
-                  </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu> */}
           <DropdownMenu >
             <DropdownMenuTrigger asChild>
                 <button className="h-16 w-16">
@@ -204,19 +145,21 @@ export default function Navbar(props: NavbarProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent className="font-sans">
               <DropdownMenuItem>
-                My Account
+                <Link href="/account">
+                  My Account
+                </Link>
               </DropdownMenuItem>
               {profile && (
                 <DropdownMenuItem>
                   <Link href="/auth/login">
-                  Logout
+                    Logout
                   </Link>
                 </DropdownMenuItem>
               )}
               {!profile && (
                 <DropdownMenuItem>
                   <Link href="/auth/login">
-                  Logout
+                    Login
                   </Link>
                 </DropdownMenuItem>
               )}

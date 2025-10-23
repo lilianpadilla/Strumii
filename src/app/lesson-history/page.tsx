@@ -20,16 +20,10 @@ import {
 
 import { caller } from "@/server/api/server"; 
 
-import { caller } from '~/server/api/server';
-
 export default async function Page() {
 
-<<<<<<< Updated upstream
-    let lesson = await caller.lesson.getLesson();
-    console.log(lesson);
-=======
-  let lessons = await caller.lesson.getLessons();
->>>>>>> Stashed changes
+    let lessons = await caller.lesson.getLesson();
+    console.log(lessons);
 
     return (
         <>
@@ -65,17 +59,6 @@ export default async function Page() {
                         <CardDescription className="text-white">Songs Learned:</CardDescription>
                         </CardHeader>
                 </Card>
-<<<<<<< Updated upstream
-                 <div className ="w-7/8 justify-center">
-                {/* make this a preset component later? */}
-                <a href="https://media.tenor.com/aSkdq3IU0g0AAAAM/laughing-cat.gif" className="block">
-                <Card className="cursor-pointer hover:shadow-lg hover:scale-103 transition-transform duration-100">
-                    <CardHeader>
-                        <CardTitle>{lesson.title}</CardTitle>
-                        <CardDescription>03-13-2025 : 2:12PM</CardDescription>
-                        <CardDescription>10 Minute Lesson</CardDescription>
-                        <CardDescription className="text-blue-500"><b>Review: Confident</b></CardDescription>
-=======
                 { /* to do: make the card change color depending on the confidence level of the lesson, if completed, do strumii blue! */ }
                  <div className ="flex flex-col w-7/8 justify-center gap-3 pb-10">
                  {lessons.map((lesson) => (
@@ -112,7 +95,6 @@ export default async function Page() {
                             <CardDescription className="text-white-500">03-13-2025 : 2:12PM</CardDescription>
                             <CardDescription className="text-white-500">5 Minute Lesson</CardDescription>
                             <CardDescription className="text-white-500"><b>Review: Completed!</b></CardDescription>
->>>>>>> Stashed changes
                         </CardHeader>
                             <div className="pr-5">
                                 <img src="/logo.png" alt=""/>

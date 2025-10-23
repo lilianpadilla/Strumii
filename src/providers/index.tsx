@@ -27,7 +27,7 @@ export function Providers({ profile, user, children }: ProvidersProps) {
             <EndNavBarProvider>
               <ThemeProvider
                 attribute="class"
-                defaultTheme="system"
+                defaultTheme="light"
                 enableSystem
                 disableTransitionOnChange
               >
@@ -37,7 +37,7 @@ export function Providers({ profile, user, children }: ProvidersProps) {
                   defaultOpen={false}
                 >
                   <div className="flex flex-col w-full">
-                    {/* <NavBar/> */}
+                    <NavBar/>
                     <div className="flex">
                       <AppSidebar className="relative max-h-[calc(100dvh-64px)]"/>
                       <SidebarInset className="absolute">

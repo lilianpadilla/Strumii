@@ -6,6 +6,8 @@ import { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes"
 import { createClient } from "~/utils/supabase/client";
+import { useIsMobile } from "~/hooks/use-mobile";
+import { Music, Home, Activity, LogOut, User } from "lucide-react";
 
 import { trpc } from "~/server/api/client";
 import {
@@ -27,7 +29,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Menu, Sun, Moon, User, LogOut, LogIn, PlusCircle, LayoutDashboard } from "lucide-react";
+import { Menu, Sun, Moon, LogIn, PlusCircle, LayoutDashboard } from "lucide-react";
 
 import { useAuth } from "~/providers/AuthProvider";
 import { middleNavBarContext, endNavBarContext } from "~/providers/NavbarProvider";
@@ -44,6 +46,7 @@ export default function Navbar(props: NavbarProps) {
   const router = useRouter();
   const supabase = createClient();
   const { setTheme } = useTheme();
+  const isMobile = useIsMobile();
 
   console.log("Navbar profile:", profile);
 
@@ -57,11 +60,18 @@ export default function Navbar(props: NavbarProps) {
     router.push(url);
   }
 
+  useEffect(() => {
+    setTheme('light')
+    console.log("light theme!")
+  }, [])
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-14 w-full items-center gap-3 px-3">
+    <>
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-[#c7e6ed] backdrop-blur">
+      <div className="flex h-24 w-full items-center gap-3 px-3">
         {/* Left: mobile menu (if logged in), logo, breadcrumbs */}
-        <div className="flex min-w-0 items-center gap-2">
+        <div className="flex h-full min-w-0 items-center gap-2">
+        {/* <div className="flex min-w-0 items-center gap-2">
           { profile && (
             <SidebarTrigger />
           )}
@@ -73,7 +83,10 @@ export default function Navbar(props: NavbarProps) {
               className="h-8 w-8"
               alt="Logo"
             />
-          </Link>
+          </Link> */}
+          <p className="font-[cursive] text-4xl">
+            Welcome Back!
+          </p>
 
           {/* Breadcrumbs */}
           <div className="hidden min-w-0 md:block">
@@ -119,11 +132,11 @@ export default function Navbar(props: NavbarProps) {
           {endNavBarContent && (
             <>
               <div className="hidden md:flex">{endNavBarContent}</div>
-              <Separator orientation="vertical" className="mx-2 h-6" />
+              {/* <Separator orientation="vertical" className="mx-2 h-6" /> */}
             </>
           )}
 
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon">
                 <Sun suppressHydrationWarning={true} className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"/>
@@ -142,10 +155,10 @@ export default function Navbar(props: NavbarProps) {
                 System
               </DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu>
+          </DropdownMenu> */}
 
           {/* User dropdown */}
-          <DropdownMenu>
+          {/* <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon" className="rounded-full">
                 <Avatar className="h-8 w-8">
@@ -182,12 +195,69 @@ export default function Navbar(props: NavbarProps) {
                 </>
               )}
             </DropdownMenuContent>
+          </DropdownMenu> */}
+          <DropdownMenu >
+            <DropdownMenuTrigger asChild>
+                <button className="h-16 w-16">
+                  <img src='/logo.png' />
+                </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="font-sans">
+              <DropdownMenuItem>
+                My Account
+              </DropdownMenuItem>
+              {profile && (
+                <DropdownMenuItem>
+                  <Link href="/auth/login">
+                  Logout
+                  </Link>
+                </DropdownMenuItem>
+              )}
+              {!profile && (
+                <DropdownMenuItem>
+                  <Link href="/auth/login">
+                  Logout
+                  </Link>
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
           </DropdownMenu>
+
         </div>
       </div>
 
       {/* Optional: desktop divider under middle content */}
       {/* <Separator /> */}
+      {/* Bottom mobile navbar */}
+
     </header>
+    {isMobile && (
+      <div className="z-100 fixed bottom-0 bg-[#84B3BE] h-20 w-full flex items-center justify-evenly py-3 shadow-[0_-2px_6px_rgba(0,0,0,0.1)]">
+        <Button
+          onClick={() => router.push("/tuner")}
+          className="flex flex-col items-center justify-center w-16 h-16 rounded-2xl bg-white text-black"
+        >
+          <Activity className="h-5 w-5 mb-1" />
+          <span className="text-xs">Tuner</span>
+        </Button>
+
+        <Button
+          onClick={() => router.push("/metronome")}
+          className="flex flex-col items-center justify-center w-16 h-16 rounded-2xl bg-white text-black"
+        >
+          <Music className="h-5 w-5 mb-1" />
+          <span className="text-xs">Metronome</span>
+        </Button>
+
+        <Button
+          onClick={() => router.push("/")}
+          className="flex flex-col items-center justify-center w-16 h-16 rounded-2xl bg-white text-black"
+        >
+          <Home className="h-5 w-5 mb-1" />
+          <span className="text-xs">Home</span>
+        </Button>
+      </div>
+    )}
+  </>
   );
 }

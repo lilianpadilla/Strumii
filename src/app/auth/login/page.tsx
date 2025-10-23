@@ -41,7 +41,7 @@ const Page = () => {
     } else {
       // Redirect to dashboard
       console.log("redirecting to dashboard")
-      router.push("/dashboard");
+      router.push("/");
     }
 
   }

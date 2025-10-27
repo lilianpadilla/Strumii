@@ -23,7 +23,6 @@ import { caller } from "@/server/api/server";
 export default async function Page() {
 
     let lessons = await caller.lesson.getLesson();
-    console.log(lessons);
 
     return (
         <>

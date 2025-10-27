@@ -8,9 +8,9 @@ const config: CapacitorConfig = {
   appId: 'com.strumii.app',
   appName: 'Strumii',
   webDir: 'public',
-  server: "http://192.168.1.199:3000"
+  server: devUrl
     ? {
-        url: "http://192.168.1.199:3000",           // ex: "http://192.168.1.50:3000"
+        url: devUrl,           // ex: "http://192.168.1.50:3000"
         cleartext: true,       // needed for http in dev (Android); harmless on iOS
         allowNavigation: ["*"] // or ["your-domain.com", "127.0.0.1", "192.168.1.0/24"]
       }

@@ -1,5 +1,6 @@
 # NextJSAppTemplate
 
+
 ![Example](./docs/NextJSAppTemplate.png)
 
 Here is an opinionated template for a NextJS application to make a web and mobile solution within a single codebase.

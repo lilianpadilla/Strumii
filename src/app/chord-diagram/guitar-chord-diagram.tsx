@@ -4,48 +4,53 @@ import React, { useEffect, useRef } from "react";
 import * as d3 from "d3";
 
 /**
- * props:
- * chordName: "C Major"
- * positions: [null, 3, 2, 0, 1, 0]   // 6 strings, EADGBE
- * stringStates: ["neutral", "correct", "incorrect", ...] // one per string
+ * Props:
+ *  - chordName: string (e.g. "C Major")
+ *  - positions: [null, 3, 2, 0, 1, 0]  // 6 strings EADGBE
+ *  - stringStates: ["neutral", "correct", ...] // one per string
  */
 
 export default function GuitarChordDiagram({ chordName, positions, stringStates }) {
-  const ref = useRef();
+  const ref = useRef<SVGSVGElement | null>(null);
 
   useEffect(() => {
     const svg = d3.select(ref.current);
-    svg.selectAll("*").remove(); // Clear previous render
+    svg.selectAll("*").remove(); // clear previous render
 
     const width = 220;
     const height = 260;
     const stringSpacing = width / 6;
     const fretSpacing = height / 6;
 
-    // Draw background
     svg
       .attr("width", width)
       .attr("height", height)
       .style("background", "white")
-      .style("border-radius", "12px");
+      .style("border-radius", "12px")
+      .style("box-shadow", "0 4px 10px rgba(0,0,0,0.1)");
 
-    // Draw strings
-    const strings = svg
+    // 🎸 Draw strings (EADGBE)
+    svg
       .selectAll(".string")
       .data(d3.range(6))
       .enter()
       .append("line")
+      .attr("class", "string")
       .attr("x1", (d) => stringSpacing / 2 + d * stringSpacing)
       .attr("y1", 30)
       .attr("x2", (d) => stringSpacing / 2 + d * stringSpacing)
       .attr("y2", height - 40)
       .attr("stroke", (d) => {
         const state = stringStates?.[d];
-        if (state === "correct") return "#22c55e"; // green
-        if (state === "incorrect") return "#ef4444"; // red
+        if (state === "correct") return "#22c55e"; // ✅ green when correct
+        if (state === "incorrect") return "#ef4444"; // ❌ red (if used later)
         return "#555"; // neutral
       })
-      .attr("stroke-width", 3);
+      .attr("stroke-width", 3)
+      .attr("stroke-linecap", "round")
+      .transition()
+      .duration(150)
+      .attr("opacity", 1);
 
     // Draw frets
     svg
@@ -82,8 +87,8 @@ export default function GuitarChordDiagram({ chordName, positions, stringStates 
       .attr("fill", "#1e293b")
       .attr("font-size", "16px")
       .attr("font-weight", "600")
-      // .text(chordName);
-  }, [chordName, positions, stringStates]);
+      .text(chordName);
+  }, [chordName, positions, stringStates]); // re-render on state change
 
   return <svg ref={ref}></svg>;
 }

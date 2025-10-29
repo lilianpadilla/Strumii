@@ -85,7 +85,7 @@ export default function Navbar(props: NavbarProps) {
             />
           </Link> */}
           <p className="font-[cursive] text-4xl">
-            Welcome Back!
+            Welcome Goodbye!
           </p>
 
           {/* Breadcrumbs */}

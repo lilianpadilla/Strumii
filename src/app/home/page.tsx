@@ -12,7 +12,7 @@ export default async function Page() {
   return (
     <>
       <div className="flex flex-col w-full h-screen">
-        <div className="flex flex-row items-center justify-between w-full text-black text-3xl font-[cursive] p-8 bg-[#c7e6ed]">
+        {/* <div className="flex flex-row items-center justify-between w-full text-black text-3xl font-[cursive] p-8 bg-[#c7e6ed]">
           Welcome Back!
       <DropdownMenu >
           <DropdownMenuTrigger asChild>
@@ -48,7 +48,7 @@ export default async function Page() {
             Home
           </Button>
 
-        </div>
+        </div> */}
       </div>     
     </>
   );

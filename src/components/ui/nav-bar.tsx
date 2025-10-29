@@ -67,7 +67,8 @@ export default function Navbar(props: NavbarProps) {
 
   return (
     <>
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-[#c7e6ed] backdrop-blur">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-[#93CAD7] backdrop-blur">
+      {/* {!isMobile && */}
       <div className="flex h-24 w-full items-center gap-3 px-3">
         {/* Left: mobile menu (if logged in), logo, breadcrumbs */}
         <div className="flex h-full min-w-0 items-center gap-2">
@@ -225,14 +226,11 @@ export default function Navbar(props: NavbarProps) {
 
         </div>
       </div>
-
-      {/* Optional: desktop divider under middle content */}
-      {/* <Separator /> */}
-      {/* Bottom mobile navbar */}
+      {/* } */}
 
     </header>
     {isMobile && (
-      <div className="z-100 fixed bottom-0 bg-[#84B3BE] h-20 w-full flex items-center justify-evenly py-3 shadow-[0_-2px_6px_rgba(0,0,0,0.1)]">
+      <div className="z-100 fixed bottom-0 bg-[#93CAD7] h-20 w-full flex items-center justify-evenly py-3 shadow-[0_-2px_6px_rgba(0,0,0,0.1)]">
         <Button
           onClick={() => router.push("/tuner")}
           className="flex flex-col items-center justify-center w-16 h-16 rounded-2xl bg-white text-black"

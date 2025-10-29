@@ -33,42 +33,109 @@ export default function Lesson1() {
     return () => clearInterval(checkEssentia);
   }, []);
 
+  // async function startListening() {
+  //   if (!essentiaReady) {
+  //     alert(" Essentia.js not yet loaded. Please wait a moment.");
+  //     return;
+  //   }
+
+  //   try {
+  //     setListening(true);
+  //     console.log("Starting mic...");
+  //     console.log("ABC")
+  //     const EssentiaClass = (window as any).Essentia;
+  //     const EssentiaWASM = (window as any).EssentiaWASM || (window as any).EssentiaWASM;
+  //     console.log("123")
+  //     console.log(EssentiaClass)
+  //     console.log(EssentiaWASM)
+
+  //     let essentia: any;
+  //     EssentiaWASM().then( function(EssentiaWasm) {
+  //       essentia = new EssentiaClass(EssentiaWasm);
+  //       // prints version of the essentia wasm backend
+  //       console.log(essentia.version)
+  //       // prints all the available algorithms in essentia.js 
+  //       console.log(essentia.algorithmNames);
+
+  //       // add your custom audio feature extraction callbacks here
+  //     });
+
+  //     return null;
+
+  //     essentia = new EssentiaClass(EssentiaWASM);
+
+  //     console.log("Essentia instance created. Available methods:", Object.keys(essentia).slice(0, 20));
+
+  //     const audioCtx = new AudioContext();
+  //     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  //     console.log(stream);
+  //     const src = audioCtx.createMediaStreamSource(stream);
+  //     const analyser = audioCtx.createAnalyser();
+  //     analyser.fftSize = 2048;
+  //     src.connect(analyser);
+
+  //     const buffer = new Float32Array(analyser.fftSize);
+
+  //     const detect = () => {
+  //       analyser.getFloatTimeDomainData(buffer);
+
+  //       // Normalize to [-1, 1]
+  //       const max = Math.max(...buffer.map(Math.abs));
+  //       if (max > 0) buffer.forEach((_, i) => (buffer[i] /= max));
+
+  //       let result: any;
+  //       if (typeof essentia.PitchYin === "function") {
+  //         result = essentia.PitchYin(buffer);
+  //       } else if (typeof essentia.PitchYinFFT === "function") {
+  //         const spectrum = essentia.Spectrum(buffer);
+  //         result = essentia.PitchYinFFT(spectrum);
+  //       } else {
+  //         console.warn("No pitch detection algorithm available.");
+  //         return;
+  //       }
+
+  //       const pitch = result.pitch ?? result[0];
+  //       const confidence = result.pitchConfidence ?? result[1] ?? 0;
+
+  //       if (confidence > 0.5 && pitch > 40 && pitch < 400) {
+  //         console.log(" Detected:", pitch.toFixed(2), "Hz");
+  //         const tol = 3; // tolerance
+  //         const newStates = expectedFreqs.map((f) =>
+  //           Math.abs(f - pitch) < tol ? "correct" : "neutral"
+  //         );
+  //         setStringStates(newStates);
+  //       }
+
+  //       requestAnimationFrame(detect);
+  //     };
+
+  //     detect();
+  //   } catch (err: any) {
+  //     console.error(" Mic access denied or error:", err);
+  //     alert("Please allow microphone access and retry.");
+  //     setListening(false);
+  //   }
+  // }
+
   async function startListening() {
-    if (!essentiaReady) {
-      alert(" Essentia.js not yet loaded. Please wait a moment.");
-      return;
-    }
+  if (!essentiaReady) {
+    alert("Essentia.js not yet loaded. Please wait a moment.");
+    return;
+  }
 
-    try {
-      setListening(true);
+  try {
+    setListening(true);
+    console.log("🎸 Starting mic...");
 
-      console.log("ABC")
-      const EssentiaClass = (window as any).Essentia;
-      const EssentiaWASM = (window as any).EssentiaWASM || (window as any).EssentiaWASM;
-      console.log("123")
-      console.log(EssentiaClass)
-      console.log(EssentiaWASM)
+    const EssentiaClass = (window as any).Essentia;
+    const EssentiaWASM = (window as any).EssentiaWASM;
 
-      let essentia: any;
-      EssentiaWASM().then( function(EssentiaWasm) {
-        essentia = new EssentiaClass(EssentiaWasm);
-        // prints version of the essentia wasm backend
-        console.log(essentia.version)
-        // prints all the available algorithms in essentia.js 
-        console.log(essentia.algorithmNames);
-
-        // add your custom audio feature extraction callbacks here
-      });
-
-      return null;
-
-      essentia = new EssentiaClass(EssentiaWASM);
-
-      console.log("Essentia instance created. Available methods:", Object.keys(essentia).slice(0, 20));
+    EssentiaWASM().then(async (EssentiaWasm: any) => {
+      const essentia = new EssentiaClass(EssentiaWasm);
+      console.log("✅ Essentia initialized. Version:", essentia.version);
 
       const audioCtx = new AudioContext();
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      console.log(stream);
       const src = audioCtx.createMediaStreamSource(stream);
       const analyser = audioCtx.createAnalyser();
       analyser.fftSize = 2048;
@@ -79,43 +146,65 @@ export default function Lesson1() {
       const detect = () => {
         analyser.getFloatTimeDomainData(buffer);
 
-        // Normalize to [-1, 1]
+        // Normalize buffer
         const max = Math.max(...buffer.map(Math.abs));
         if (max > 0) buffer.forEach((_, i) => (buffer[i] /= max));
 
-        let result: any;
-        if (typeof essentia.PitchYin === "function") {
-          result = essentia.PitchYin(buffer);
-        } else if (typeof essentia.PitchYinFFT === "function") {
-          const spectrum = essentia.Spectrum(buffer);
-          result = essentia.PitchYinFFT(spectrum);
-        } else {
-          console.warn("No pitch detection algorithm available.");
-          return;
+        // Detect pitch
+        // Convert JS Float32Array → Essentia VectorFloat
+        const audioFrame = essentia.arrayToVector(buffer, "Float32");
+
+        // Run pitch detection
+        const result = essentia.PitchYin(audioFrame);
+
+        // Free memory after use
+        if (audioFrame && audioFrame.delete) {
+          audioFrame.delete(); // correct for wasm-vector objects
         }
+
 
         const pitch = result.pitch ?? result[0];
         const confidence = result.pitchConfidence ?? result[1] ?? 0;
 
-        if (confidence > 0.5 && pitch > 40 && pitch < 400) {
-          console.log(" Detected:", pitch.toFixed(2), "Hz");
-          const tol = 3; // tolerance
-          const newStates = expectedFreqs.map((f) =>
-            Math.abs(f - pitch) < tol ? "correct" : "neutral"
+      if (confidence > 0.5 && pitch > 40 && pitch < 400) {
+        console.log("🎶 Pitch detected:", pitch.toFixed(2), "Hz");
+        const tol = 3;
+
+        // ✅ Update only matching strings
+        setStringStates((prev) => {
+          const updated = [...prev];
+          expectedFreqs.forEach((f, i) => {
+            if (Math.abs(f - pitch) < tol) {
+              updated[i] = "correct";
+            } else if (updated[i] !== "correct") {
+              // keep already-correct strings lit for a short time
+              updated[i] = "neutral";
+            }
+          });
+          return updated;
+        });
+
+        // optional fade-out after 1 s
+        setTimeout(() => {
+          setStringStates((prev) =>
+            prev.map((s) => (s === "correct" ? "neutral" : s))
           );
-          setStringStates(newStates);
-        }
+        }, 1000);
+      }
+
 
         requestAnimationFrame(detect);
       };
 
       detect();
-    } catch (err: any) {
-      console.error(" Mic access denied or error:", err);
-      alert("Please allow microphone access and retry.");
-      setListening(false);
-    }
+    });
+  } catch (err: any) {
+    console.error("🎙️ Mic access denied or error:", err);
+    alert("Please allow microphone access and retry.");
+    setListening(false);
   }
+}
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-sky-200 space-y-4">

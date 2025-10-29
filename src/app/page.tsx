@@ -17,15 +17,12 @@ export default function Page() {
           <Button variant="secondary" className="flex justify-center w-4/5 h-80 text-2xl bg-[#93CAD7]"> 
             Start Lesson!
           </Button> 
-<<<<<<< Updated upstream
-          <Button variant="secondary" className="flex justify-center w-4/5 h-40 text-2xl"> 
-            Lesson History
-=======
+          
           <Button variant="secondary" className="flex justify-center w-4/5 h-40 text-2xl bg-[#93CAD7]">
             <Link href="/lesson-history">
               Lesson History
             </Link> 
->>>>>>> Stashed changes
+
           </Button> 
         </div>
       </div>     

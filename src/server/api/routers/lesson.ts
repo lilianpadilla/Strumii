@@ -6,12 +6,12 @@ export const lessonRouter = createTRPCRouter({
   getLesson: privateProcedure
     .query(async ({ input, ctx }) => {
       try {
-        const lesson = await ctx.db.lesson.findUnique({
+        const lessons = await ctx.db.lesson.findMany({
           where: {
             id: ctx.user?.id,
           },
         });
-        return lesson;
+        return lessons;
       } catch (error) {
         console.error("Error fetching lesson:", error);
         return null;

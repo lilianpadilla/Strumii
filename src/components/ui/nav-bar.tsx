@@ -51,10 +51,20 @@ export default function Navbar(props: NavbarProps) {
   console.log("Navbar profile:", profile);
 
   async function logOut() {
+    console.log("Hello")
     await supabase.auth.signOut();
-    fetch(`${location.origin}/api/auth/logout`, { method: "POST", headers: { "Content-Type": "application/json" } });
-    router.refresh();
-    router.push("/auth/login");
+    // fetch(`${location.origin}/api/auth/logout`, { method: "POST", headers: { "Content-Type": "application/json" } });
+    // router.refresh();
+    // router.push("/auth/login");
+
+    await fetch("api/auth/logout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+      keepalive: true,
+    })
+
+    router.replace("/auth/login")
   }
   function guardedPush(url: string) {
     router.push(url);
@@ -153,6 +163,9 @@ export default function Navbar(props: NavbarProps) {
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={logOut}>
                     Logout
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {router.push("/")}}>
+                    Home
                   </DropdownMenuItem>
                 </>
               )}

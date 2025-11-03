@@ -167,6 +167,7 @@ export default function Navbar(props: NavbarProps) {
                   <DropdownMenuItem onClick={() => {router.push("/")}}>
                     Home
                   </DropdownMenuItem>
+
                 </>
               )}
               {!profile && (

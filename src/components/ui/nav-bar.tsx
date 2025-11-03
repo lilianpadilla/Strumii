@@ -85,7 +85,8 @@ export default function Navbar(props: NavbarProps) {
               alt="Logo"
             />
           </Link> */}
-          <p className="font-[cursive] text-4xl">
+          <p onClick={() => {router.push("/")}} className="font-[cursive] text-4xl">
+            
             Welcome Back!
           </p>
 
@@ -145,24 +146,25 @@ export default function Navbar(props: NavbarProps) {
                 </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent className="font-sans">
-              <DropdownMenuItem>
-                <Link href="/account">
-                  My Account
-                </Link>
-              </DropdownMenuItem>
               {profile && (
-                <DropdownMenuItem>
-                  <Link href="/auth/login">
+                <>
+                  <DropdownMenuItem onClick={() => {router.push("/account")}}>
+                    My Account
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={logOut}>
                     Logout
-                  </Link>
-                </DropdownMenuItem>
+                  </DropdownMenuItem>
+                </>
               )}
               {!profile && (
-                <DropdownMenuItem>
-                  <Link href="/auth/login">
-                    Login
-                  </Link>
+                <>
+                <DropdownMenuItem onClick={() => {router.push("/auth/login")}}>
+                  Login
                 </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {router.push("/")}}>
+                  Home
+                </DropdownMenuItem>
+                </>
               )}
             </DropdownMenuContent>
           </DropdownMenu>

@@ -3,7 +3,8 @@ import { Profile } from "@prisma/client";
 
 import { AuthProvider } from "./AuthProvider";
 import { TRPCProvider } from "~/server/api/client";
-import { MiddleNavBarProvider, EndNavBarProvider } from "./NavbarProvider";
+// import { MiddleNavBarProvider, EndNavBarProvider } from "./NavbarProvider";
+import { NavbarProvider } from "./NavbarProvider";
 import React from "react";
 import { ThemeProvider } from '@/providers/theme-provider';
 import { AppSidebar } from '@/components/ui/app-sidebar';
@@ -23,32 +24,30 @@ export function Providers({ profile, user, children }: ProvidersProps) {
     <>
       <TRPCProvider>
         <AuthProvider initialProfile={profile} initialUser={user}>
-          <MiddleNavBarProvider>
-            <EndNavBarProvider>
-              <ThemeProvider
-                attribute="class"
-                defaultTheme="light"
-                enableSystem
-                disableTransitionOnChange
+          <NavbarProvider>
+            <ThemeProvider
+              attribute="class"
+              defaultTheme="light"
+              enableSystem
+              disableTransitionOnChange
+            >
+              <Toaster />
+              <MobileStatusBar/>
+              <SidebarProvider
+                defaultOpen={false}
               >
-                <Toaster />
-                <MobileStatusBar/>
-                <SidebarProvider
-                  defaultOpen={false}
-                >
-                  <div className="flex flex-col w-full">
-                    <NavBar/>
-                    <div className="flex">
-                      <AppSidebar className="relative max-h-[calc(100dvh-64px)]"/>
-                      <SidebarInset className="absolute">
-                        {children}
-                      </SidebarInset>
-                    </div>
+                <div className="flex flex-col w-full">
+                  <NavBar/>
+                  <div className="flex">
+                    <AppSidebar className="relative max-h-[calc(100dvh-64px)]"/>
+                    <SidebarInset className="absolute">
+                      {children}
+                    </SidebarInset>
                   </div>
-                </SidebarProvider>
-              </ThemeProvider>
-            </EndNavBarProvider>
-          </MiddleNavBarProvider>
+                </div>
+              </SidebarProvider>
+            </ThemeProvider>
+          </NavbarProvider>
         </AuthProvider>
       </TRPCProvider>
     </>

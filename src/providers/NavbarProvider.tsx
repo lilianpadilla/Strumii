@@ -1,34 +1,35 @@
+"use client";
+
 import React, { useState, createContext } from 'react';
 
-export const middleNavBarContext = createContext<React.ReactNode>(<></>);
-export const useMiddleNavBarContext = createContext<any>(undefined);
+type NavbarContextState = {
+  middleNavbar: React.ReactNode;
+  setMiddleNavbar: (content: React.ReactNode) => void;
+  endNavbar: React.ReactNode;
+  setEndNavbar: (content: React.ReactNode) => void;
+  showNavbar?: boolean;
+  setShowNavbar?: (show: boolean) => void;
+}
 
-export const endNavBarContext = createContext<React.ReactNode>(<></>);
-export const useEndNavBarContext = createContext<any>(undefined);
+const NavbarContext = createContext<NavbarContextState>({
+  middleNavbar: <></>,
+  setMiddleNavbar: () => {},
+  endNavbar: <></>,
+  setEndNavbar: () => {},
+  showNavbar: true,
+  setShowNavbar: () => {},
+});
 
-export const MiddleNavBarProvider = (props: { children: any }) => {
-  const [middleNavBarContent, setMiddleNavBarContent] = useState<React.ReactNode>(<></>);
+export const useNavbar = () => React.useContext(NavbarContext);
+
+export function NavbarProvider({ children }: { children: React.ReactNode }) {
+  const [middleNavbar, setMiddleNavbar] = useState<React.ReactNode>(<></>);
+  const [endNavbar, setEndNavbar] = useState<React.ReactNode>(<></>);
+  const [showNavbar, setShowNavbar] = useState<boolean>(true);
 
   return (
-    <middleNavBarContext.Provider value={middleNavBarContent}>
-      {/* @ts-ignore */}
-      <useMiddleNavBarContext.Provider value={setMiddleNavBarContent}>
-        {props.children}
-      </useMiddleNavBarContext.Provider>
-    </middleNavBarContext.Provider>
+    <NavbarContext.Provider value={{ middleNavbar, setMiddleNavbar, endNavbar, setEndNavbar, showNavbar, setShowNavbar }}>
+      {children}
+    </NavbarContext.Provider>
   );
-};
-
-export const EndNavBarProvider = (props: { children: any }) => {
-  const [endNavBarContent, setEndNavBarContent] = useState<React.ReactNode>(<></>);
-
-  return (
-    <endNavBarContext.Provider value={endNavBarContent}>
-      {/* @ts-ignore */}
-      <useEndNavBarContext.Provider value={setEndNavBarContent}>
-        {props.children}
-      </useEndNavBarContext.Provider>
-    </endNavBarContext.Provider>
-  );
-};
-
+}

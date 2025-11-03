@@ -25,6 +25,7 @@
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-dropdown-menu": "^2.1.15",
     "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-scroll-area": "^1.2.10",
     "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
@@ -63,9 +64,8 @@
     "zod": "^4.1.9"
   },
   "devDependencies": {
-    "tailwindcss": "^4.1.11",
-    "@tailwindcss/postcss": "^4.1.11",
     "@capacitor/cli": "^7.4.2",
+    "@tailwindcss/postcss": "^4.1.11",
     "@types/eslint": "^8.44.8",
     "@types/node": "^18.19.0",
     "@types/react": "19.1.9",
@@ -83,6 +83,7 @@
     "prisma": "^6.13.0",
     "prisma-case-format": "^1.7.3",
     "supabase": "^1.142.2",
+    "tailwindcss": "^4.1.11",
     "typescript": "^5.3.2"
   },
   "ct3aMetadata": {

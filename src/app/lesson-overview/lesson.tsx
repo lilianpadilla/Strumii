@@ -15,16 +15,18 @@ export default function LessonOverview() {
     }
 
      return ( 
-        <div className="mx-auto flex flex-col w-[90%] justify-center gap-2">
+        <div className="mx-auto flex flex-col w-[90%] justify-center gap-2 pt-5">
             <Card>
-                <CardHeader> Lesson Description </CardHeader>
-                <CardContent> 
-                    This lesson will teach you the E chord. One of the fundamental and simple chords to learn guitar. This is to get you started in guitar playing!
-                </CardContent> 
+                <CardHeader>
+                    <CardTitle>Lesson title goes here! </CardTitle>
+                    <CardContent>Chords go here</CardContent>
+                    <CardContent>desc goes here!</CardContent> 
+                    <CardContent>time estimate goes here!</CardContent> 
+                </CardHeader>
             </Card>
-            <Button>Start Lesson!</Button>
-            <Textarea className="bg-gray-200 mt-12" value={text} onChange={(e) => setText(e.target.value)} placeholder="Have a suggestion? Let me know!"></Textarea>
-            <Button onClick={handleButton}>Suggest</Button>
+            <Button className="bg-[#93CAD7] hover:bg-[#6a96a1]">Start Lesson!</Button>
+            <Textarea className="bg-gray-200 mt-12 resize-none" value={text} onChange={(e) => setText(e.target.value)} placeholder="Have a suggestion? Let me know!"></Textarea>
+            <Button onClick={handleButton} className="bg-[#93CAD7] hover:bg-[#6a96a1]">Suggest</Button>
         </div>
         )
     }

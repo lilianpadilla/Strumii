@@ -3,12 +3,12 @@ import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/ap
 import { createClient } from '@supabase/supabase-js'
 
 export const lessonRouter = createTRPCRouter({
-  getLesson: privateProcedure
+  getLessons: privateProcedure
     .query(async ({ input, ctx }) => {
       try {
         const lessons = await ctx.db.lesson.findMany({
           where: {
-            id: ctx.user?.id,
+            profileId: ctx.user?.id,
           },
         });
         return lessons;

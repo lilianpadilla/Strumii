@@ -6,7 +6,9 @@ import {Card, CardDescription, CardHeader, CardTitle} from "@/components/ui/card
 import { caller } from "@/server/api/server"; 
 
 export default async function Page() {
-    let lessons = await caller.lesson.getLesson();
+    let lessons = await caller.lesson.getLessons();
+
+    console.log(lessons)
     return (
         <>
             <div className="flex flex-col w-full gap-y-5 items-center h-[80vh]">

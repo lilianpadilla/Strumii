@@ -1,55 +1,44 @@
-"use server";
+"use client";
 
-import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
+import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { Profiler } from "react";
-import { Button } from "~/components/ui/button";
-import { DropdownMenuItem, DropdownMenuLabel } from "~/components/ui/dropdown-menu";
+import { motion } from "framer-motion";
 
-export default async function Page() {
-
+export default function Page() {
   return (
-    <>
-      <div className="flex flex-col w-full h-screen">
-        {/* <div className="flex flex-row items-center justify-between w-full text-black text-3xl font-[cursive] p-8 bg-[#c7e6ed]">
-          Welcome Back!
-      <DropdownMenu >
-          <DropdownMenuTrigger asChild>
-            <button className="h-12 w-12">
-          <Avatar>
-            <AvatarImage src="/logo.png" alt="Logo" />
-          </Avatar>
-          </button>
-        </DropdownMenuTrigger>
-      <DropdownMenuContent className="bg-white font-sans">
-        <DropdownMenuItem>
-          My Account
-        </DropdownMenuItem>
-        <DropdownMenuItem>
-          <Link href="/auth/login">
-          Login
-          </Link>
-        </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-    </div>
-        
-        <div className="bg-[#93CAD7] h-full w-full justify-items-center pt-20 space-y-6">
-        </div>
-        <div className="fixed bottom-0 bg-[#84B3BE] h-1/9 w-full flex items-center justify-evenly py-3">
-          <Button className="w-19 h-19 rounded-2xl bg-white text-black ">
-            Tuner
-          </Button>
-          <Button className="w-19 h-19 rounded-2xl bg-white text-black ">
-            Metranome
-          </Button>
-          <Button className="w-19 h-19 rounded-2xl bg-white text-black">
-            Home
-          </Button>
+    <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden bg-gradient-to-br from-[#93CAD7] via-white to-[#93CAD7] text-white">
+      {/* Decorative Background Circles */}
+      <div className="absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute w-96 h-96 bg-[#93CAD7] rounded-full blur-3xl top-20 left-10 animate-pulse" />
+        <div className="absolute w-72 h-72 bg-[#93CAD7] rounded-full blur-3xl bottom-20 right-10 animate-pulse delay-1000" />
+      </div>
 
-        </div> */}
-      </div>     
-    </>
+      {/* Hero Section */}
+      <h1 className="text-5xl sm:text-6xl font-extrabold tracking-tight mb-4">
+        <span className="text-black">Meet</span>{" "}
+        <span className="text-[#93CAD7]">Strumii</span>
+      </h1>
+
+      <p className="text-lg sm:text-xl text-black mb-8">
+        An AI powered music learning tool that adapts to your pace, skill level, and busy sechedule.
+      </p>
+
+      <div className="flex gap-4 justify-center">
+        <Link href="/auth/login">
+          <Button
+            size="lg"
+            className="bg-[#93CAD7] hover:bg-[##76a5b0] text-white shadow-lg shadow-[#93CAD7]"
+          >
+            Start Learning
+          </Button>
+        </Link>
+      </div>
+
+      <img
+        src="/logo.png"
+        alt="Strumii Mascot"
+        className="relative z-10 mx-auto w-64 h-auto drop-shadow-xl mt-10"
+/>
+    </div>
   );
-};
+}

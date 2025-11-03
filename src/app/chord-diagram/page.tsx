@@ -3,144 +3,232 @@
 import React, { useState, useEffect } from "react";
 import GuitarChordDiagram from "./guitar-chord-diagram";
 import { Button } from "~/components/ui/button";
-// import { EssentiaClass, EssentiaWASM } from "essentia.js"
-// @ts-ignore
-// import Essentia from 'https://cdn.jsdelivr.net/npm/essentia.js@0.1.3/dist/essentia.js-core.es.js';
-// import essentia-wasm-module
-// @ts-ignore
-// import { EssentiaWASM } from 'https://cdn.jsdelivr.net/npm/essentia.js@0.1.3/dist/essentia-wasm.es.js';
-
-
+import { useRouter } from 'next/navigation'
 
 export default function Lesson1() {
+  const chords = [
+    {
+      name: "C Major",
+      positions: [null, 3, 2, 0, 1, 0],
+      expectedFreqs: [82.41, 110.0, 146.83, 196.0, 246.94, 329.63],
+      strings: ["E (low)", "A", "D", "G", "B", "E (high)"],
+    },
+    {
+      name: "G Major",
+      positions: [3, 2, 0, 0, 0, 3],
+      expectedFreqs: [98.0, 123.47, 146.83, 196.0, 246.94, 392.0],
+      strings: ["E (low)", "A", "D", "G", "B", "E (high)"],
+    },
+    {
+      name: "A Minor",
+      positions: [null, 0, 2, 2, 1, 0],
+      expectedFreqs: [82.41, 110.0, 146.83, 220.0, 261.63, 329.63],
+      strings: ["E (low)", "A", "D", "G", "B", "E (high)"],
+    },
+  ];
+
+  const [currentChordIndex, setCurrentChordIndex] = useState(0);
+  const [lessonStage, setLessonStage] = useState<"single" | "strum" | "next" | "done">("single");
+  const [currentStringIndex, setCurrentStringIndex] = useState(0);
   const [stringStates, setStringStates] = useState(Array(6).fill("neutral"));
-  const [listening, setListening] = useState(false);
   const [essentiaReady, setEssentiaReady] = useState(false);
+  const [listening, setListening] = useState(false);
+  const router = useRouter();
 
-  const positions = [null, 3, 2, 0, 1, 0]; // C major chord
-  // const expectedFreqs = [82.41, 110.0, 146.83, 196.0, 246.94, 329.63]; // EADGBE
-  const expectedFreqs = [98.00, 130.81, 164.81, 196.00, 261.63, 329.63]; // open C chord specifically
 
-  // Wait for Essentia to load from the global window
+  // Load Essentia.js
   useEffect(() => {
     const checkEssentia = setInterval(() => {
-      if ((window as any).Essentia || (window as any).EssentiaJS) {
+      if ((window as any).Essentia && (window as any).EssentiaWASM) {
         clearInterval(checkEssentia);
         setEssentiaReady(true);
-        console.log("Essentia.js is ready");
+        console.log("✅ Essentia ready");
       }
     }, 500);
-
     return () => clearInterval(checkEssentia);
   }, []);
 
-
   async function startListening() {
-  if (!essentiaReady) {
-    alert("Essentia.js not yet loaded. Please wait a moment.");
-    return;
-  }
-
-  try {
-    setListening(true);
-    console.log("🎸 Starting mic...");
+    if (!essentiaReady) {
+      alert("Please wait, Essentia.js not ready yet.");
+      return;
+    }
 
     const EssentiaClass = (window as any).Essentia;
     const EssentiaWASM = (window as any).EssentiaWASM;
+    const wasm = await EssentiaWASM();
+    const essentia = new EssentiaClass(wasm);
 
-    EssentiaWASM().then(async (EssentiaWasm: any) => {
-      const essentia = new EssentiaClass(EssentiaWasm);
-      console.log("✅ Essentia initialized. Version:", essentia.version);
+    console.log("🎸 Starting mic...");
+    setListening(true);
 
-      const audioCtx = new AudioContext();
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const src = audioCtx.createMediaStreamSource(stream);
-      const analyser = audioCtx.createAnalyser();
-      analyser.fftSize = 2048;
-      src.connect(analyser);
+    const audioCtx = new AudioContext();
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    const src = audioCtx.createMediaStreamSource(stream);
+    const analyser = audioCtx.createAnalyser();
+    analyser.fftSize = 2048;
+    src.connect(analyser);
 
-      const buffer = new Float32Array(analyser.fftSize);
+    const buffer = new Float32Array(analyser.fftSize);
 
-      const detect = () => {
-        analyser.getFloatTimeDomainData(buffer);
+    const detect = () => {
+      analyser.getFloatTimeDomainData(buffer);
+      const audioVector = essentia.arrayToVector(buffer);
+      const pitchData = essentia.PitchYin(audioVector);
+      const pitch = pitchData.pitch;
+      const confidence = pitchData.pitchConfidence;
+      const chord = chords[currentChordIndex];
 
-        // Normalize buffer
-        const max = Math.max(...buffer.map(Math.abs));
-        if (max > 0) buffer.forEach((_, i) => (buffer[i] /= max));
+      if (confidence > 0.7 && pitch > 40 && pitch < 600) {
+        const expectedPitch = chord.expectedFreqs[currentStringIndex];
+        const tolerance = 3;
 
-        // Detect pitch
-        // Convert JS Float32Array → Essentia VectorFloat
-        const audioFrame = essentia.arrayToVector(buffer, "Float32");
+        if (
+          Math.abs(pitch - expectedPitch) < tolerance &&
+          chord.positions[currentStringIndex] !== null
+        ) {
+          console.log(`✅ Correct pitch for string ${currentStringIndex + 1}`);
+          const updated = [...stringStates];
+          updated[currentStringIndex] = "correct";
+          setStringStates(updated);
 
-        // Run pitch detection
-        const result = essentia.PitchYin(audioFrame);
-
-        // Free memory after use
-        if (audioFrame && audioFrame.delete) {
-          audioFrame.delete(); // correct for wasm-vector objects
+          if (currentStringIndex < 5) {
+            setCurrentStringIndex((prev) => prev + 1);
+          } else {
+            console.log("🎵 All single strings done! Proceed to strum.");
+            setLessonStage("strum");
+          }
         }
-
-
-        const pitch = result.pitch ?? result[0];
-        const confidence = result.pitchConfidence ?? result[1] ?? 0;
-
-      if (confidence > 0.5 && pitch > 40 && pitch < 400) {
-        console.log("🎶 Pitch detected:", pitch.toFixed(2), "Hz");
-        const tol = 3;
-
-        // ✅ Update only matching strings
-        setStringStates((prev) => {
-          const updated = [...prev];
-          expectedFreqs.forEach((f, i) => {
-            if (Math.abs(f - pitch) < tol) {
-              updated[i] = "correct";
-            } else if (updated[i] !== "correct") {
-              // keep already-correct strings lit for a short time
-              updated[i] = "neutral";
-            }
-          });
-          return updated;
-        });
-
-        // optional fade-out after 1 s
-        setTimeout(() => {
-          setStringStates((prev) =>
-            prev.map((s) => (s === "correct" ? "neutral" : s))
-          );
-        }, 1000);
       }
 
-
-        requestAnimationFrame(detect);
-      };
-
-      detect();
-    });
-  } catch (err: any) {
-    console.error("🎙️ Mic access denied or error:", err);
-    alert("Please allow microphone access and retry.");
-    setListening(false);
+      requestAnimationFrame(detect);
+    };
+    detect();
   }
-}
 
+  // Fake strum detector (for now)
+  const handleStrumDetected = () => {
+    console.log("🎶 Strum detected!");
+    setLessonStage("next");
+  };
 
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-sky-200 space-y-4">
-      <h1 className="text-2xl font-semibold text-gray-800">C Major Chord Trainer</h1>
+  const nextChord = () => {
+    if (currentChordIndex < chords.length - 1) {
+      setCurrentChordIndex((i) => i + 1);
+      setLessonStage("single");
+      setCurrentStringIndex(0);
+      setStringStates(Array(6).fill("neutral"));
+    } else {
+      setLessonStage("done");
+      setListening(false);
+    }
+  };
+
+  const chord = chords[currentChordIndex];
+  const progress = ((currentChordIndex + 1) / chords.length) * 100;
+
+    return (
+    <div className="flex flex-col items-center justify-center min-h-screen bg-sky-200 space-y-5 p-4">
+      <h1 className="text-2xl font-semibold text-gray-800">
+        Chord Progression Lesson
+      </h1>
+
+      {/* Progress Bar */}
+      <div className="w-64 bg-gray-300 h-3 rounded-full overflow-hidden">
+        <div
+          className="bg-sky-600 h-3 rounded-full transition-all duration-300"
+          style={{ width: `${progress}%` }}
+        />
+      </div>
+
+      <h2 className="text-xl font-medium text-gray-700">{chord.name}</h2>
 
       <GuitarChordDiagram
-        chordName="C Major"
-        positions={positions}
+        chordName={chord.name}
+        positions={chord.positions}
         stringStates={stringStates}
       />
 
-      <Button
-        onClick={startListening}
-        disabled={!essentiaReady}
-        className="bg-white text-gray-800 font-medium py-3 px-4 rounded-lg shadow-md hover:bg-gray-100 disabled:opacity-50"
-      >
-        {essentiaReady ? "Listen " : "Loading Essentia..."}
-      </Button>
+      {/* Instruction Messages */}
+      {lessonStage === "single" && (
+        <div className="text-md text-gray-700 font-medium">
+          🎵 Play string {currentStringIndex + 1} (
+          {chord.strings[currentStringIndex]})
+        </div>
+      )}
+      {lessonStage === "strum" && (
+        <div className="text-md text-green-700 font-semibold">
+          ✅ Great! Now strum the full chord.
+        </div>
+      )}
+      {lessonStage === "next" && (
+        <div className="text-md text-green-700 font-semibold">
+          ✅ Chord complete! Click next to continue.
+        </div>
+      )}
+      {lessonStage === "done" && (
+        <div className="text-md text-green-700 font-semibold">
+          🎉 Lesson complete! Great job.
+        </div>
+      )}
+
+      {/* Control Buttons */}
+      <div className="flex gap-3 mt-4 flex-wrap justify-center">
+        {!listening && lessonStage !== "done" && (
+          <Button
+            onClick={startListening}
+            disabled={!essentiaReady}
+            className="bg-white text-gray-800 font-medium py-2 px-4 rounded-lg shadow-md hover:bg-gray-100 disabled:opacity-50"
+          >
+            {essentiaReady ? "Start Lesson" : "Loading..."}
+          </Button>
+        )}
+
+        {/* ✅ Manual Skip for Testing */}
+        {lessonStage === "single" && (
+          <Button
+            onClick={() => {
+              if (currentStringIndex < 5) {
+                setCurrentStringIndex((prev) => prev + 1);
+              } else {
+                setLessonStage("strum");
+              }
+            }}
+            className="bg-white text-gray-800 font-medium py-2 px-4 rounded-lg shadow-md hover:bg-yellow-500"
+          >
+            Skip String →
+          </Button>
+        )}
+
+        {lessonStage === "strum" && (
+          <Button
+            onClick={handleStrumDetected}
+            className="bg-yellow-500 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-yellow-600"
+          >
+            Mark Strum Complete 🎶
+          </Button>
+        )}
+
+        {lessonStage === "next" && (
+          <Button
+            onClick={nextChord}
+            className="bg-green-500 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-green-600"
+          >
+            Next Chord →
+          </Button>
+        )}
+
+        {lessonStage === "done" && (
+          <Button
+            onClick={() => router.push("/")}
+            className="bg-indigo-500 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-indigo-600"
+          >
+            Finish Lesson
+          </Button>
+        )}
+
+      </div>
     </div>
   );
 }
+

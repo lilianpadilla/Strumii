@@ -6,6 +6,8 @@ import { useState, useEffect, useContext } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes"
 import { createClient } from "~/utils/supabase/client";
+import { useIsMobile } from "~/hooks/use-mobile";
+import { Music, Home, Activity, LogOut, User } from "lucide-react";
 
 import { trpc } from "~/server/api/client";
 import {
@@ -27,7 +29,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Menu, Sun, Moon, User, LogOut, LogIn, PlusCircle, LayoutDashboard } from "lucide-react";
+import { Menu, Sun, Moon, LogIn, PlusCircle, LayoutDashboard } from "lucide-react";
 
 import { useAuth } from "~/providers/AuthProvider";
 import { middleNavBarContext, endNavBarContext } from "~/providers/NavbarProvider";
@@ -44,24 +46,43 @@ export default function Navbar(props: NavbarProps) {
   const router = useRouter();
   const supabase = createClient();
   const { setTheme } = useTheme();
+  const isMobile = useIsMobile();
 
   console.log("Navbar profile:", profile);
 
   async function logOut() {
+    console.log("Hello")
     await supabase.auth.signOut();
-    fetch(`${location.origin}/api/auth/logout`, { method: "POST", headers: { "Content-Type": "application/json" } });
-    router.refresh();
-    router.push("/auth/login");
+    // fetch(`${location.origin}/api/auth/logout`, { method: "POST", headers: { "Content-Type": "application/json" } });
+    // router.refresh();
+    // router.push("/auth/login");
+
+    await fetch("api/auth/logout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      cache: "no-store",
+      keepalive: true,
+    })
+
+    router.replace("/auth/login")
   }
   function guardedPush(url: string) {
     router.push(url);
   }
 
+  useEffect(() => {
+    setTheme('light')
+    console.log("light theme!")
+  }, [])
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="flex h-14 w-full items-center gap-3 px-3">
+    <>
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-[#93CAD7] backdrop-blur">
+      {/* {!isMobile && */}
+      <div className="flex h-24 w-full items-center gap-3 px-3">
         {/* Left: mobile menu (if logged in), logo, breadcrumbs */}
-        <div className="flex min-w-0 items-center gap-2">
+        <div className="flex h-full min-w-0 items-center gap-2">
+        {/* <div className="flex min-w-0 items-center gap-2">
           { profile && (
             <SidebarTrigger />
           )}
@@ -73,7 +94,11 @@ export default function Navbar(props: NavbarProps) {
               className="h-8 w-8"
               alt="Logo"
             />
-          </Link>
+          </Link> */}
+          <p onClick={() => {router.push("/")}} className="font-[cursive] text-4xl">
+            
+            Welcome Back!
+          </p>
 
           {/* Breadcrumbs */}
           <div className="hidden min-w-0 md:block">
@@ -119,75 +144,77 @@ export default function Navbar(props: NavbarProps) {
           {endNavBarContent && (
             <>
               <div className="hidden md:flex">{endNavBarContent}</div>
-              <Separator orientation="vertical" className="mx-2 h-6" />
+              {/* <Separator orientation="vertical" className="mx-2 h-6" /> */}
             </>
           )}
 
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon">
-                <Sun suppressHydrationWarning={true} className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"/>
-                <Moon suppressHydrationWarning={true} className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                <span className="sr-only">Toggle theme</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setTheme("light")}>
-                Light
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("dark")}>
-                Dark
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setTheme("system")}>
-                System
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
           {/* User dropdown */}
-          <DropdownMenu>
+          <DropdownMenu >
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="icon" className="rounded-full">
-                <Avatar className="h-8 w-8">
-                  <AvatarImage src={avatar} alt="User" />
-                  <AvatarFallback>
-                    <User suppressHydrationWarning={true} className="h-4 w-4" />
-                  </AvatarFallback>
-                </Avatar>
-              </Button>
+                <button className="h-16 w-16">
+                  <img src='/logo.png' />
+                </button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56">
-              {profile ? (
+            <DropdownMenuContent className="font-sans">
+              {profile && (
                 <>
-                  <DropdownMenuItem onClick={() => guardedPush("/account")}>
-                    <User className="mr-2 h-4 w-4" /> Profile
+                  <DropdownMenuItem onClick={() => {router.push("/account")}}>
+                    My Account
                   </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={() => guardedPush("/dashboard")}>
-                    <LayoutDashboard className="mr-2 h-4 w-4" /> Dashboard
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logOut}>
-                    <LogOut className="mr-2 h-4 w-4" /> Logout
+                    Logout
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => {router.push("/")}}>
+                    Home
+                  </DropdownMenuItem>
+
                 </>
-              ) : (
+              )}
+              {!profile && (
                 <>
-                  <DropdownMenuItem onClick={() => guardedPush("/auth/login")}>
-                    <LogIn className="mr-2 h-4 w-4" /> Log In
-                  </DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => guardedPush("/auth/register")}>
-                    <PlusCircle className="mr-2 h-4 w-4" /> Register
-                  </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {router.push("/auth/login")}}>
+                  Login
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {router.push("/")}}>
+                  Home
+                </DropdownMenuItem>
                 </>
               )}
             </DropdownMenuContent>
           </DropdownMenu>
+
         </div>
       </div>
+      {/* } */}
 
-      {/* Optional: desktop divider under middle content */}
-      {/* <Separator /> */}
     </header>
+    {isMobile && (
+      <div className="z-100 fixed bottom-0 bg-[#93CAD7] h-20 w-full flex items-center justify-evenly py-3 shadow-[0_-2px_6px_rgba(0,0,0,0.1)]">
+        <Button
+          onClick={() => router.push("/tuner")}
+          className="flex flex-col items-center justify-center w-16 h-16 rounded-2xl bg-white text-black"
+        >
+          <Activity className="h-5 w-5 mb-1" />
+          <span className="text-xs">Tuner</span>
+        </Button>
+
+        <Button
+          onClick={() => router.push("/metronome")}
+          className="flex flex-col items-center justify-center w-16 h-16 rounded-2xl bg-white text-black"
+        >
+          <Music className="h-5 w-5 mb-1" />
+          <span className="text-xs">Metronome</span>
+        </Button>
+
+        <Button
+          onClick={() => router.push("/")}
+          className="flex flex-col items-center justify-center w-16 h-16 rounded-2xl bg-white text-black"
+        >
+          <Home className="h-5 w-5 mb-1" />
+          <span className="text-xs">Home</span>
+        </Button>
+      </div>
+    )}
+  </>
   );
 }

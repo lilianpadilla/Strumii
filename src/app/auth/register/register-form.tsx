@@ -114,7 +114,7 @@ export default function RegisterForm() {
             <Button
               variant="outline"
               className="w-full mt-4"
-              onClick={() => router.push("/access")}
+              onClick={() => router.push("/")}
             >
               Go to Access Page
             </Button>

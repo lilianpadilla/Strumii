@@ -1,4 +1,5 @@
 import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
+import { z } from 'zod';
 
 export const lessonRouter = createTRPCRouter({
   getLessons: privateProcedure
@@ -16,12 +17,13 @@ export const lessonRouter = createTRPCRouter({
       }
     }),
   getLesson: privateProcedure
-    .query(async ({input, ctx }) => {
+    .input(z.string())
+    .query(async ({input: lessonId, ctx }) => {
       try {
         const lesson = await ctx.db.lesson.findUnique({
           where: {
             profileId: ctx.user?.id,
-            id: input,
+            id: lessonId,
           },
         });
         return lesson;

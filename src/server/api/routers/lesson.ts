@@ -1,20 +1,35 @@
-import { z } from "zod";
 import { createTRPCRouter, privateProcedure, publicProcedure } from "~/server/api/trpc";
-import { createClient } from '@supabase/supabase-js'
+import { z } from 'zod';
 
 export const lessonRouter = createTRPCRouter({
-  getLesson: privateProcedure
-    .query(async ({ input, ctx }) => {
+  getLessons: privateProcedure
+    .query(async ({ ctx }) => {
       try {
         const lessons = await ctx.db.lesson.findMany({
           where: {
-            id: ctx.user?.id,
+            profileId: ctx.user?.id,
           },
         });
         return lessons;
       } catch (error) {
-        console.error("Error fetching lesson:", error);
+        console.error("Error fetching lessons:", error);
         return null;
       }
     }),
+  getLesson: privateProcedure
+    .input(z.string())
+    .query(async ({input: lessonId, ctx }) => {
+      try {
+        const lesson = await ctx.db.lesson.findUnique({
+          where: {
+            profileId: ctx.user?.id,
+            id: lessonId,
+          },
+        });
+        return lesson;
+      } catch (error) {
+        console.error("Error Fetching Lesson:", error);
+        return null
+      }
+    })
 });

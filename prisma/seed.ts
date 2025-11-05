@@ -51,7 +51,27 @@ const getLessons = (): Prisma.LessonCreateInput[] => [
     completed: false,
     expDuration: 10,
     profile: { connect: {id: "00000000-0000-0000-0000-000000000001"} }
-  }
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000002",
+    title: "Lesson example: not Completed",
+    description: "This is a not-completed lesson",
+    createdAt: yesterday,
+    updatedAt: yesterday,
+    completed: false,
+    expDuration: 5,
+    profile: { connect: {id: "00000000-0000-0000-0000-000000000001"} }
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000003",
+    title: "Lesson example: Completed Lesson",
+    description: "This is a completed lesson",
+    createdAt: yesterday,
+    updatedAt: yesterday,
+    completed: true,
+    expDuration: 15,
+    profile: { connect: {id: "00000000-0000-0000-0000-000000000001"} }
+  },
 ];
 
 const main = async () => {

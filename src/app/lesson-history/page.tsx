@@ -45,16 +45,16 @@ export default async function Page() {
                  {lessons.map((lesson) => (
                   <Card
                     key = {lesson.id}
-                    className={`cursor-pointer hover:shadow-lg hover:scale-103 transition-transform duration-100`}
+                    className={`cursor-pointer hover:shadow-lg hover:scale-103 transition-transform duration-100 ${lesson.completed ? 'bg-[#93CAD7]' : 'bg-white-500'}`}
                     >
                       <CardHeader className="w-full">
-                        <CardTitle>{lesson.title}</CardTitle>
-                        <CardDescription>{lesson.description} </CardDescription>
-                        <CardDescription>Started: 
+                        <CardTitle className={lesson.completed ? 'text-white' : 'text-black'}>{lesson.title}</CardTitle>
+                        <CardDescription className={lesson.completed ? 'text-white' : 'text-black'}>{lesson.description} </CardDescription>
+                        <CardDescription className={lesson.completed ? 'text-white' : 'text-black'}>Started: 
                             {lesson.createdAt.toLocaleString('en-US', {hour: 'numeric', minute: 'numeric', year: 'numeric', month: '2-digit', day: '2-digit', hour12: true}) } | 
                             Completed: {lesson.completed ? 'Yes' : 'No'}
-                        </CardDescription>
-                        <CardDescription>{ lesson.expDuration } Minutes</CardDescription>
+                        </CardDescription >
+                        <CardDescription className={lesson.completed ? 'text-white' : 'text-black'}>{ lesson.expDuration } Minutes</CardDescription>
                       </CardHeader>
                     </Card>
                  ))}

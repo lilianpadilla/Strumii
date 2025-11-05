@@ -65,29 +65,52 @@ export default function GuitarChordDiagram({ chordName, positions, stringStates 
       .attr("stroke", "#999")
       .attr("stroke-width", 2);
 
+    const stringLabels = ["E", "A", "D", "G", "B", "e"]
+    
+    svg
+      .selectAll(".string-label")
+      .data(stringLabels)
+      .enter()
+      .append("text")
+      .attr("x", (d, i) => stringSpacing / 2 + i * stringSpacing)
+      .attr("y", height - 15)
+      .attr("text-anchor", "middle")
+      .attr("fill", "#374151")
+      .attr("font-size", "12px")
+      .attr("font-weight", "500")
+      .text((d) => d);
+
     // Draw finger dots
     positions.forEach((fret, i) => {
-      if (fret === null) return; // open string
       const x = stringSpacing / 2 + i * stringSpacing;
-      const y = 40 + (fret - 0.5) * fretSpacing;
-      svg
-        .append("circle")
-        .attr("cx", x)
-        .attr("cy", y)
-        .attr("r", 8)
-        .attr("fill", "#1d4ed8");
+
+      if (fret === null) {
+        // 🎸 Muted string → draw X
+        svg
+          .append("text")
+          .attr("x", x)
+          .attr("y", 25)
+          .attr("text-anchor", "middle")
+          .attr("fill", "#ef4444")
+          .attr("font-size", "14px")
+          .attr("font-weight", "bold")
+          .text("X");
+        return;
+      }
+
+      // 🟦 Fretted string → draw filled dot
+      if (fret != 0) {
+        const y = 40 + (fret - 0.5) * fretSpacing;
+        svg
+          .append("circle")
+          .attr("cx", x)
+          .attr("cy", y)
+          .attr("r", 8)
+          .attr("fill", "#1d4ed8");
+      }
+
     });
 
-    // Add chord name
-    svg
-      .append("text")
-      .attr("x", width / 2)
-      .attr("y", 20)
-      .attr("text-anchor", "middle")
-      .attr("fill", "#1e293b")
-      .attr("font-size", "16px")
-      .attr("font-weight", "600")
-      .text(chordName);
   }, [chordName, positions, stringStates]); // re-render on state change
 
   return <svg ref={ref}></svg>;

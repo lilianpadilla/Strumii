@@ -11,19 +11,19 @@ export default function Lesson1() {
       name: "C Major",
       positions: [null, 3, 2, 0, 1, 0],
       expectedFreqs: [82.41, 110.0, 146.83, 196.0, 246.94, 329.63],
-      strings: ["E (low)", "A", "D", "G", "B", "E (high)"],
+      strings: ["E", "A", "D", "G", "B", "e (high)"],
     },
     {
       name: "G Major",
       positions: [3, 2, 0, 0, 0, 3],
       expectedFreqs: [98.0, 123.47, 146.83, 196.0, 246.94, 392.0],
-      strings: ["E (low)", "A", "D", "G", "B", "E (high)"],
+      strings: ["E", "A", "D", "G", "B", "e (high)"],
     },
     {
       name: "A Minor",
       positions: [null, 0, 2, 2, 1, 0],
       expectedFreqs: [82.41, 110.0, 146.83, 220.0, 261.63, 329.63],
-      strings: ["E (low)", "A", "D", "G", "B", "E (high)"],
+      strings: ["E", "A", "D", "G", "B", "e (high)"],
     },
   ];
 

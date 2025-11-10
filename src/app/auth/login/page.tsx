@@ -51,9 +51,6 @@ const Page = () => {
       <AuthCard
         title="Login"
         errorMsg={error}
-        onToastDismiss={(type) => {
-          if (type === "error") setError("");
-        }}
       >
         <form>
           <Label htmlFor="email" className="mb-2 text-sm">Email</Label>

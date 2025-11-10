@@ -41,6 +41,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         >
           <Providers profile={profile} user={user}>
             {children}
+            
+            {/* Spacer to account for fixed bottom nav on mobile */}
+            <div className="h-24 md:hidden"></div>
           </Providers>
         </body>
       </html>

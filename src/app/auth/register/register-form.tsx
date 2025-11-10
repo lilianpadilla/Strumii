@@ -95,7 +95,6 @@ export default function RegisterForm() {
 
       // Update the profile with first and last name
       await profileUpdate.mutateAsync({
-        profileId: data.user?.id || "",
         name: name || "",
       });
       setRegistered(true);
@@ -123,7 +122,7 @@ export default function RegisterForm() {
       )}
 
       { !registered && (
-        <div className="flex justify-center items-center h-[60vh] md:h-[90vh]">
+        <div className="flex justify-center items-center h-[90vh]">
           <Card className="w-full max-w-sm">
             <CardHeader>
               <CardTitle>Create your Account</CardTitle>

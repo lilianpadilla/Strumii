@@ -17,7 +17,7 @@ export default function LessonFeedback({lesson}: {lesson: Lesson }) {
     }
 
      return ( 
-        <div className="mx-auto flex flex-col w-[90%] justify-center gap-2 pt-5">
+        <div className="mx-auto h-full flex flex-col w-[90%] justify-center gap-2 pt-5">
             <Card>
                 <CardHeader>
                     <CardTitle className="text-xl">Lesson Finished!</CardTitle>
@@ -30,10 +30,13 @@ export default function LessonFeedback({lesson}: {lesson: Lesson }) {
             <div className ="flex flex-row justify-center gap-1 p-5">
                 <Button className="bg-red-500">D:</Button>
                 <Button className="bg-orange-500">);</Button>
-                <Button className="bg-yellow-500">(:</Button>
-                <Button className="bg-green-500">:D</Button>
+                <Button className="bg-yellow-500">|:</Button>
+                <Button className="bg-green-500">(:</Button>
+                <Button className="bg-[#93CAD7]">:D</Button>
             </div>
-            <Textarea className="bg-gray-200 mt-5 resize-none" value={text} onChange={(e) => setText(e.target.value)} placeholder="Lesson Feedback? This can help me give you better lesson suggestions"></Textarea>
+            <div className="flex flex-col flex-1">
+            <Textarea className="bg-gray-200 h-50 mt-5 resize-none" value={text} onChange={(e) => setText(e.target.value)} placeholder="Lesson Feedback? This can help me give you better lesson suggestions"></Textarea>
+            </div>
             <Button onClick={handleButton} className="bg-[#93CAD7] hover:bg-[#6a96a1]">Next Lesson</Button>
         </div>
         )}

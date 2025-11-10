@@ -10,9 +10,9 @@ const config: CapacitorConfig = {
   webDir: 'public',
   server: devUrl
     ? {
-        url: devUrl,
-        cleartext: true,
-        allowNavigation: ["*"]
+        url: devUrl,           // ex: "http://192.168.1.50:3000"
+        cleartext: true,       // needed for http in dev (Android); harmless on iOS
+        allowNavigation: ["*"] // or ["your-domain.com", "127.0.0.1", "192.168.1.0/24"]
       }
     : undefined,
 };

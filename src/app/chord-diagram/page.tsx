@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import GuitarChordDiagram from "./guitar-chord-diagram";
 import { Button } from "~/components/ui/button";
-import { useRouter } from 'next/navigation'
+import { useRouter } from "next/navigation";
 
 export default function Lesson1() {
   const chords = [
@@ -28,15 +28,35 @@ export default function Lesson1() {
   ];
 
   const [currentChordIndex, setCurrentChordIndex] = useState(0);
-  const [lessonStage, setLessonStage] = useState<"single" | "strum" | "next" | "done">("single");
+  const [lessonStage, setLessonStage] = useState<
+    "single" | "strum" | "next" | "done"
+  >("single");
   const [currentStringIndex, setCurrentStringIndex] = useState(0);
-  const [stringStates, setStringStates] = useState(Array(6).fill("neutral"));
+  const [stringStates, setStringStates] = useState<string[]>(
+    Array(6).fill("neutral")
+  );
   const [essentiaReady, setEssentiaReady] = useState(false);
   const [listening, setListening] = useState(false);
   const router = useRouter();
 
+  // 🔁 refs so the audio loop sees fresh state
+  const chordIndexRef = useRef(currentChordIndex);
+  const lessonStageRef = useRef(lessonStage);
+  const stringIndexRef = useRef(currentStringIndex);
 
-  // Load Essentia.js
+  useEffect(() => {
+    chordIndexRef.current = currentChordIndex;
+  }, [currentChordIndex]);
+
+  useEffect(() => {
+    lessonStageRef.current = lessonStage;
+  }, [lessonStage]);
+
+  useEffect(() => {
+    stringIndexRef.current = currentStringIndex;
+  }, [currentStringIndex]);
+
+  // ✅ Load Essentia.js dynamically
   useEffect(() => {
     const checkEssentia = setInterval(() => {
       if ((window as any).Essentia && (window as any).EssentiaWASM) {
@@ -59,7 +79,19 @@ export default function Lesson1() {
     const wasm = await EssentiaWASM();
     const essentia = new EssentiaClass(wasm);
 
-    console.log("🎸 Starting mic...");
+    console.log(
+      "✅ Essentia loaded algorithms:",
+      essentia.algorithmNames.slice(0, 10)
+    );
+    if (!essentia.HPCP) {
+      console.error(
+        "HPCP not found — check that Essentia WASM version supports tonal features."
+      );
+    } else {
+      console.log(" HPCP available — ready for chord analysis.");
+    }
+
+    console.log(" Starting mic...");
     setListening(true);
 
     const audioCtx = new AudioContext();
@@ -74,52 +106,146 @@ export default function Lesson1() {
     const detect = () => {
       analyser.getFloatTimeDomainData(buffer);
       const audioVector = essentia.arrayToVector(buffer);
-      const pitchData = essentia.PitchYin(audioVector);
-      const pitch = pitchData.pitch;
-      const confidence = pitchData.pitchConfidence;
-      const chord = chords[currentChordIndex];
 
-      if (confidence > 0.7 && pitch > 40 && pitch < 600) {
-        const expectedPitch = chord.expectedFreqs[currentStringIndex];
-        const tolerance = 3;
+      const chord = chords[chordIndexRef.current];
+      let stringIndex = stringIndexRef.current;
+      const stage = lessonStageRef.current;
 
-        if (
-          Math.abs(pitch - expectedPitch) < tolerance &&
-          chord.positions[currentStringIndex] !== null
+      // 🔸 base state: everything neutral, current string = active (yellow)
+      const updated = Array(6).fill("neutral") as string[];
+
+      // 🧹 skip muted strings (positions === null)
+      if (stage === "single") {
+        while (
+          stringIndex < 6 &&
+          chord.positions[stringIndex] === null
         ) {
-          console.log(`✅ Correct pitch for string ${currentStringIndex + 1}`);
-          const updated = [...stringStates];
-          updated[currentStringIndex] = "correct";
-          setStringStates(updated);
+          console.log(`🎸 Skipping muted string ${stringIndex + 1}`);
+          stringIndex += 1;
+        }
 
-          if (currentStringIndex < 5) {
-            setCurrentStringIndex((prev) => prev + 1);
+        // if we skipped to/past the end, go to strum phase
+        if (stringIndex >= 6) {
+          setLessonStage("strum");
+          lessonStageRef.current = "strum";
+          setStringStates(Array(6).fill("neutral"));
+          requestAnimationFrame(detect);
+          return;
+        }
+
+        // sync state + ref with possibly updated stringIndex
+        if (stringIndex !== stringIndexRef.current) {
+          stringIndexRef.current = stringIndex;
+          setCurrentStringIndex(stringIndex);
+        }
+
+        updated[stringIndex] = "active"; // yellow current string
+        setStringStates(updated);
+
+        // 🎵 Single-string pitch detection
+        const pitchData = essentia.PitchYin(audioVector);
+
+        let pitch = 0;
+        let confidence = 0;
+
+        if (Array.isArray(pitchData)) {
+          pitch = pitchData[0];
+          confidence = pitchData[1];
+        } else if (pitchData && typeof pitchData === "object") {
+          pitch = pitchData.pitch ?? 0;
+          confidence = pitchData.pitchConfidence ?? 0;
+        }
+
+        if (confidence > 0.7 && pitch > 40 && pitch < 600) {
+          const expectedPitch = chord.expectedFreqs[stringIndex];
+          const tolerance = 3;
+
+          if (Math.abs(pitch - expectedPitch) < tolerance) {
+            // ✅ Correct pitch → green
+            updated[stringIndex] = "correct";
           } else {
-            console.log("🎵 All single strings done! Proceed to strum.");
-            setLessonStage("strum");
+            // ❌ Wrong pitch → red
+            updated[stringIndex] = "incorrect";
           }
+          setStringStates([...updated]);
+
+          if (updated[stringIndex] === "correct") {
+            // advance to next playable string
+            let nextIndex = stringIndex + 1;
+            while (
+              nextIndex < 6 &&
+              chord.positions[nextIndex] === null
+            ) {
+              nextIndex += 1;
+            }
+
+            if (nextIndex < 6) {
+              stringIndexRef.current = nextIndex;
+              setCurrentStringIndex(nextIndex);
+            } else {
+              console.log("🎵 All single strings done! Proceed to strum.");
+              setLessonStage("strum");
+              lessonStageRef.current = "strum";
+              setStringStates(Array(6).fill("neutral"));
+            }
+          }
+        }
+      }
+
+      // 🎶 Strum detection using HPCP
+      if (stage === "strum") {
+        const spectrum = essentia.Spectrum(audioVector);
+        const hpcpVector = essentia.HPCP(spectrum);
+        const hpcpArray = essentia.vectorToArray(hpcpVector);
+        const chordDetected = analyzeHPCP(hpcpArray, chord.name);
+        if (chordDetected.confidence > 0.7) {
+          console.log(`✅ Full chord recognized as ${chordDetected.chord}`);
+          setLessonStage("next");
+          lessonStageRef.current = "next";
         }
       }
 
       requestAnimationFrame(detect);
     };
+
     detect();
   }
 
-  // Fake strum detector (for now)
-  const handleStrumDetected = () => {
-    console.log("🎶 Strum detected!");
-    setLessonStage("next");
-  };
+  // 🔍 Helper for HPCP Chord Matching
+  function analyzeHPCP(hpcpArray: number[], currentChord: string) {
+    const templates: Record<string, number[]> = {
+      "C Major": [1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0],
+      "G Major": [0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0],
+      "A Minor": [0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0],
+    };
+
+    const expected = templates[currentChord];
+    if (!expected) return { chord: "Unknown", confidence: 0 };
+
+    const dot = hpcpArray.reduce((sum, v, i) => sum + v * expected[i], 0);
+    const magA = Math.sqrt(hpcpArray.reduce((s, v) => s + v ** 2, 0));
+    const magB = Math.sqrt(expected.reduce((s, v) => s + v ** 2, 0));
+    const confidence = dot / (magA * magB);
+
+    return { chord: currentChord, confidence };
+  }
 
   const nextChord = () => {
     if (currentChordIndex < chords.length - 1) {
-      setCurrentChordIndex((i) => i + 1);
+      const nextIndex = currentChordIndex + 1;
+      setCurrentChordIndex(nextIndex);
+      chordIndexRef.current = nextIndex;
+
       setLessonStage("single");
+      lessonStageRef.current = "single";
+
       setCurrentStringIndex(0);
+      stringIndexRef.current = 0;
+
       setStringStates(Array(6).fill("neutral"));
     } else {
       setLessonStage("done");
+      lessonStageRef.current = "done";
       setListening(false);
     }
   };
@@ -127,7 +253,7 @@ export default function Lesson1() {
   const chord = chords[currentChordIndex];
   const progress = ((currentChordIndex + 1) / chords.length) * 100;
 
-    return (
+  return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-sky-200 space-y-5 p-4">
       <h1 className="text-2xl font-semibold text-gray-800">
         Chord Progression Lesson
@@ -184,14 +310,26 @@ export default function Lesson1() {
           </Button>
         )}
 
-        {/* ✅ Manual Skip for Testing */}
         {lessonStage === "single" && (
           <Button
             onClick={() => {
-              if (currentStringIndex < 5) {
-                setCurrentStringIndex((prev) => prev + 1);
+              // manual skip for testing
+              let nextIndex = currentStringIndex + 1;
+              const chord = chords[currentChordIndex];
+
+              while (
+                nextIndex < 6 &&
+                chord.positions[nextIndex] === null
+              ) {
+                nextIndex += 1;
+              }
+
+              if (nextIndex < 6) {
+                setCurrentStringIndex(nextIndex);
+                stringIndexRef.current = nextIndex;
               } else {
                 setLessonStage("strum");
+                lessonStageRef.current = "strum";
               }
             }}
             className="bg-white text-gray-800 font-medium py-2 px-4 rounded-lg shadow-md hover:bg-yellow-500"
@@ -202,10 +340,13 @@ export default function Lesson1() {
 
         {lessonStage === "strum" && (
           <Button
-            onClick={handleStrumDetected}
-            className="bg-yellow-500 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-yellow-600"
+            onClick={() => {
+              setLessonStage("next");
+              lessonStageRef.current = "next";
+            }}
+            className="bg-orange-400 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-orange-500"
           >
-            Mark Strum Complete 🎶
+            Skip Strum →
           </Button>
         )}
 
@@ -226,9 +367,7 @@ export default function Lesson1() {
             Finish Lesson
           </Button>
         )}
-
       </div>
     </div>
   );
 }
-

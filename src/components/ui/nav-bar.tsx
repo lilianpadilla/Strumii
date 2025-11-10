@@ -47,31 +47,28 @@ export default function Navbar(props: NavbarProps) {
   const { setTheme } = useTheme();
   const isMobile = useIsMobile();
 
-  console.log("Navbar profile:", profile);
-
   async function logOut() {
-    console.log("Hello")
-    await supabase.auth.signOut();
-    // fetch(`${location.origin}/api/auth/logout`, { method: "POST", headers: { "Content-Type": "application/json" } });
-    // router.refresh();
-    // router.push("/auth/login");
-
-    await fetch("api/auth/logout", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      cache: "no-store",
-      keepalive: true,
-    })
-
-    router.replace("/auth/login")
+    try {
+      await supabase.auth.signOut();
+      await fetch("api/auth/logout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        cache: "no-store",
+        keepalive: true,
+      })
+      router.replace("/home")
+    } catch (error) {
+      window.location.href = "/home";
+      console.error("Error logging out:", error);
+    }
   }
+
   function guardedPush(url: string) {
     router.push(url);
   }
 
   useEffect(() => {
     setTheme('light')
-    console.log("light theme!")
   }, [])
 
   return (
@@ -157,23 +154,22 @@ export default function Navbar(props: NavbarProps) {
                     </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent className="font-sans">
-                  <DropdownMenuItem>
-                    <Link href="/account">
-                      My Account
-                    </Link>
-                  </DropdownMenuItem>
                   {profile && (
-                    <DropdownMenuItem>
-                      <Link href="/auth/login">
+                    <>
+                      <DropdownMenuItem onClick={() => router.push("/")}>
+                        Home 
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => router.push("/account")}>
+                        My Account
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={logOut}>
                         Logout
-                      </Link>
-                    </DropdownMenuItem>
+                      </DropdownMenuItem>
+                    </>
                   )}
                   {!profile && (
-                    <DropdownMenuItem>
-                      <Link href="/auth/login">
-                        Login
-                      </Link>
+                    <DropdownMenuItem onClick={() => router.push("/auth/login")}>
+                      Login
                     </DropdownMenuItem>
                   )}
                 </DropdownMenuContent>

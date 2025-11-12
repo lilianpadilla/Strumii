@@ -7,7 +7,7 @@ import * as d3 from "d3";
  * Props:
  *  - chordName: string (e.g. "C Major")
  *  - positions: [null, 3, 2, 0, 1, 0]  // 6 strings EADGBE
- *  - stringStates: ["neutral", "correct", ...] // one per string
+ *  - stringStates: ["neutral", "active", "correct", "incorrect"] // one per string
  */
 
 export default function GuitarChordDiagram({ chordName, positions, stringStates }) {
@@ -42,9 +42,16 @@ export default function GuitarChordDiagram({ chordName, positions, stringStates 
       .attr("y2", height - 40)
       .attr("stroke", (d) => {
         const state = stringStates?.[d];
-        if (state === "correct") return "#22c55e"; // ✅ green when correct
-        if (state === "incorrect") return "#ef4444"; // ❌ red (if used later)
-        return "#555"; // neutral
+        switch (state) {
+          case "active":
+            return "#facc15"; // 🟡 Yellow for current string
+          case "correct":
+            return "#22c55e"; // ✅ Green for correct
+          case "incorrect":
+            return "#ef4444"; // ❌ Red for incorrect
+          default:
+            return "#000"; // ⚫ Black for neutral
+        }
       })
       .attr("stroke-width", 3)
       .attr("stroke-linecap", "round")
@@ -52,7 +59,7 @@ export default function GuitarChordDiagram({ chordName, positions, stringStates 
       .duration(150)
       .attr("opacity", 1);
 
-    // Draw frets
+    // 🎵 Draw frets
     svg
       .selectAll(".fret")
       .data(d3.range(5))
@@ -65,30 +72,52 @@ export default function GuitarChordDiagram({ chordName, positions, stringStates 
       .attr("stroke", "#999")
       .attr("stroke-width", 2);
 
-    // Draw finger dots
+    // 🎸 Label string names at the bottom
+    const stringLabels = ["E", "A", "D", "G", "B", "e"];
+    svg
+      .selectAll(".string-label")
+      .data(stringLabels)
+      .enter()
+      .append("text")
+      .attr("x", (d, i) => stringSpacing / 2 + i * stringSpacing)
+      .attr("y", height - 15)
+      .attr("text-anchor", "middle")
+      .attr("fill", "#374151")
+      .attr("font-size", "12px")
+      .attr("font-weight", "500")
+      .text((d) => d);
+
+    // 🎵 Draw fretted dots and muted X
     positions.forEach((fret, i) => {
-      if (fret === null) return; // open string
       const x = stringSpacing / 2 + i * stringSpacing;
-      const y = 40 + (fret - 0.5) * fretSpacing;
-      svg
-        .append("circle")
-        .attr("cx", x)
-        .attr("cy", y)
-        .attr("r", 8)
-        .attr("fill", "#1d4ed8");
+
+      if (fret === null) {
+        // Muted string → draw X
+        svg
+          .append("text")
+          .attr("x", x)
+          .attr("y", 25)
+          .attr("text-anchor", "middle")
+          .attr("fill", "#ef4444")
+          .attr("font-size", "14px")
+          .attr("font-weight", "bold")
+          .text("X");
+        return;
+      }
+
+      // Fretted string → draw dot
+      if (fret !== 0) {
+        const y = 40 + (fret - 0.5) * fretSpacing;
+        svg
+          .append("circle")
+          .attr("cx", x)
+          .attr("cy", y)
+          .attr("r", 8)
+          .attr("fill", "#1d4ed8");
+      }
     });
 
-    // Add chord name
-    svg
-      .append("text")
-      .attr("x", width / 2)
-      .attr("y", 20)
-      .attr("text-anchor", "middle")
-      .attr("fill", "#1e293b")
-      .attr("font-size", "16px")
-      .attr("font-weight", "600")
-      .text(chordName);
-  }, [chordName, positions, stringStates]); // re-render on state change
+  }, [chordName, positions, stringStates]);
 
   return <svg ref={ref}></svg>;
 }

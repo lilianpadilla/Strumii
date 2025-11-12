@@ -4,13 +4,17 @@ import React, { useState, useEffect, useRef } from "react";
 import GuitarChordDiagram from "./guitar-chord-diagram";
 import { Button } from "~/components/ui/button";
 import { useRouter } from "next/navigation";
+// import { chords as chords2 } from "@tombatossals/chords-db";
+import chords from "~/utils/guitar"
+// console.log(chords)
+console.log(chords.chords.C[2].positions[0].frets)
 
 export default function Lesson1() {
   const chords = [
-    {
+    {   
       name: "C Major",
       positions: [null, 3, 2, 0, 1, 0],
-      expectedFreqs: [82.41, 110.0, 146.83, 196.0, 246.94, 329.63],
+      expectedFreqs: [82, 110.0, 146.83, 196.0, 246.94, 329.63],
       strings: ["E", "A", "D", "G", "B", "e (high)"],
     },
     {

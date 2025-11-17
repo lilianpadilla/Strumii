@@ -30,14 +30,31 @@ function generateUUID() {
   });
 }
 
+const getUserPreferences = (): Prisma.UserPreferencesCreateInput[] => [
+  {
+    id: "00000000-0000-0000-0000-000000000001",
+    preferredGenres: ["Rock", "Jazz"],
+    skillLevel: "beginner",
+    lessonLength: 2,
+  },
+  {
+    id: "00000000-0000-0000-0000-000000000002",
+    preferredGenres: ["Classical", "Pop"],
+    skillLevel: "intermediate",
+    lessonLength: 4,
+  },
+];
+
 const getProfiles = (): Prisma.ProfileCreateInput[] => [
   { 
     id: "00000000-0000-0000-0000-000000000001", 
     name: "John Doe",
+    userPreferences: { connect: {id: "00000000-0000-0000-0000-000000000001"} }
   },
   { 
     id: "00000000-0000-0000-0000-000000000002", 
     name: "Jane Doe",
+    userPreferences: { connect: {id: "00000000-0000-0000-0000-000000000002"} }
   },
 ];
 
@@ -86,6 +103,16 @@ const main = async () => {
     return
   }
 
+  const userPreferences = await Promise.all(
+    getUserPreferences().map((pref) => client.userPreferences.upsert(
+      {
+        where: { id: pref.id },
+        update: { ...pref },
+        create: { ...pref },
+      }
+    ))
+  );
+
   const profiles = await Promise.all(
     getProfiles().map((profile) => client.profile.upsert(
       {
@@ -106,6 +133,7 @@ const main = async () => {
     ))
   );
 
+  console.log(userPreferences)
   console.log(profiles)
   console.log(lessons)
 };

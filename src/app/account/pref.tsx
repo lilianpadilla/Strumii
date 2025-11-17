@@ -6,11 +6,18 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils"; // optional helper for conditional classes (if you have it)
+import { UserPreferences } from "@prisma/client";
+import { trpc } from '~/server/api/client';
 
-export default function PreferencesCard() {
-  const [selectedSkillLevel, setSelectedSkillLevel] = React.useState<string | null>(null);
-  const [selectedGenres, setSelectedGenres] = React.useState<string[]>([]);
-  const [selectedLessonLength, setSelectedLessonLength] = React.useState<string | null>(null);
+
+
+export default function PreferencesCard({ userPreferences }: { userPreferences: UserPreferences }) {
+
+  const profileUpdate = trpc.profile.updateUserPreferences.useMutation();
+  const [selectedSkillLevel, setSelectedSkillLevel] = React.useState<string | null>(userPreferences.skillLevel);
+  const [selectedGenres, setSelectedGenres] = React.useState<string[]>(userPreferences.preferredGenres);
+  const [selectedLessonLength, setSelectedLessonLength] = React.useState<string | null>(userPreferences.lessonLength.toString());
+  
 
   const genres = ["Rock", "Pop", "Blues", "Jazz", "Country"];
 
@@ -20,6 +27,21 @@ export default function PreferencesCard() {
         ? prev.filter((g) => g !== genre)
         : [...prev, genre]
     );
+  }
+
+  async function handleUpdate() {
+    console.log({
+        selectedSkillLevel,
+        selectedGenres,
+        selectedLessonLength,
+    })
+
+    await profileUpdate.mutate({
+      id: userPreferences.id,
+      skillLevel: selectedSkillLevel!,
+      preferredGenres: selectedGenres,
+      lessonLength: selectedLessonLength ? parseInt(selectedLessonLength) : undefined,
+    });
   }
 
   return (
@@ -32,7 +54,7 @@ export default function PreferencesCard() {
         {/* Skill Level */}
         <div className="space-y-2">
           <Label className="text-sm font-medium">Skill Level</Label>
-          <RadioGroup onValueChange={setSelectedSkillLevel} className="flex justify-between">
+          <RadioGroup value={selectedSkillLevel} onValueChange={setSelectedSkillLevel} className="flex justify-between">
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="beginner" id="beginner" />
               <Label htmlFor="beginner">Beginner</Label>
@@ -76,7 +98,7 @@ export default function PreferencesCard() {
           <select
             className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-black"
             onChange={(e) => setSelectedLessonLength(e.target.value)}
-            defaultValue=""
+            defaultValue={selectedLessonLength || ""}
           >
             <option value="" disabled>
               Select length
@@ -92,13 +114,7 @@ export default function PreferencesCard() {
       <CardFooter className="flex justify-center">
         <Button
           className="bg-black text-white hover:bg-[#93CAD7] rounded-xl px-6 py-2 font-medium"
-          onClick={() =>
-            console.log({
-              selectedSkillLevel,
-              selectedGenres,
-              selectedLessonLength,
-            })
-          }
+          onClick={handleUpdate}
         >
           Update Now
         </Button>

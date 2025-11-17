@@ -1,6 +1,17 @@
+model UserPreferences {
+  id               String      @id @db.Uuid
+  preferredGenres  String[]
+  skillLevel       String
+  lessonLength     Int
+  profile          Profile?
+  @@map("user_preferences")
+}
+
 model Profile {
   id                String      @id @db.Uuid
   name              String      @default("")
   lessons           Lesson[]
+  userPreferences   UserPreferences @relation(fields: [userPreferencesId], references: [id])
+  userPreferencesId String      @db.Uuid @unique
   @@map("profile")
 }

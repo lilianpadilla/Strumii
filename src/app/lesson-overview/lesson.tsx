@@ -21,7 +21,7 @@ export default function LessonOverview({lesson}: {lesson: Lesson }) {
             <Card>
                 <CardHeader>
                     <CardTitle>{lesson.title}</CardTitle>
-                    <CardContent>Chords go here</CardContent>
+                    <CardContent>chords</CardContent>
                     <CardContent>{lesson.description}</CardContent> 
                     <CardContent>{lesson.expDuration} Minutes</CardContent> 
                 </CardHeader>

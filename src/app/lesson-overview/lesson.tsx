@@ -5,7 +5,8 @@ import { CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Card } from "~/components/ui/card"; 
 import { Textarea } from "~/components/ui/textarea";
 import { Button } from "~/components/ui/button"
-import { Lesson } from "@prisma/client";
+import { Lesson } from "./types"
+// import { Lesson } from "@prisma/client";
 
 export default function LessonOverview({lesson}: {lesson: Lesson }) {
      const [text, setText] = useState("") 
@@ -21,7 +22,15 @@ export default function LessonOverview({lesson}: {lesson: Lesson }) {
             <Card>
                 <CardHeader>
                     <CardTitle>{lesson.title}</CardTitle>
-                    <CardContent>chords</CardContent>
+                    {/*Iterate through each chord*/}
+                    <CardContent>
+                        {lesson.chords.map((chord, index) => (
+                            <span key={chord.key + chord.suffix}>
+                                {chord.key} {chord.suffix}
+                                {index < lesson.chords.length - 1 ? ' | ' : ''}
+                            </span>
+                        ))}
+                    </CardContent>
                     <CardContent>{lesson.description}</CardContent> 
                     <CardContent>{lesson.expDuration} Minutes</CardContent> 
                 </CardHeader>

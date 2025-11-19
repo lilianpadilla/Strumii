@@ -6,30 +6,13 @@ import { Button } from "~/components/ui/button";
 import { useRouter } from "next/navigation";
 // import { chords as chords2 } from "@tombatossals/chords-db";
 import chords from "~/utils/guitar"
+import { getFret, fretToList, getChordName } from "~/utils/chord-db-utils"
 // console.log(chords)
-console.log(chords.chords.C[2].positions[0].frets)
+// console.log(chords.chords.C[2].positions[0].frets)
 
-export default function Lesson1() {
-  const chords = [
-    {   
-      name: "C Major",
-      positions: [null, 3, 2, 0, 1, 0],
-      expectedFreqs: [82, 110.0, 146.83, 196.0, 246.94, 329.63],
-      strings: ["E", "A", "D", "G", "B", "e (high)"],
-    },
-    {
-      name: "G Major",
-      positions: [3, 2, 0, 0, 0, 3],
-      expectedFreqs: [98.0, 123.47, 146.83, 196.0, 246.94, 392.0],
-      strings: ["E", "A", "D", "G", "B", "e (high)"],
-    },
-    {
-      name: "A Minor",
-      positions: [null, 0, 2, 2, 1, 0],
-      expectedFreqs: [82.41, 110.0, 146.83, 220.0, 261.63, 329.63],
-      strings: ["E", "A", "D", "G", "B", "e (high)"],
-    },
-  ];
+const standard_tuning = ["E2", "A2", "D3", "G3", "B3", "E4"]
+
+export default function LessonActivity({ lesson }: {lesson: any}) {
 
   const [currentChordIndex, setCurrentChordIndex] = useState(0);
   const [lessonStage, setLessonStage] = useState<
@@ -111,7 +94,9 @@ export default function Lesson1() {
       analyser.getFloatTimeDomainData(buffer);
       const audioVector = essentia.arrayToVector(buffer);
 
-      const chord = chords[chordIndexRef.current];
+      const chord = lesson.chords[chordIndexRef.current];
+      const fret = getFret(chord.key, chord.suffix)
+      const positions = fretToList(fret)
       let stringIndex = stringIndexRef.current;
       const stage = lessonStageRef.current;
 
@@ -122,7 +107,7 @@ export default function Lesson1() {
       if (stage === "single") {
         while (
           stringIndex < 6 &&
-          chord.positions[stringIndex] === null
+          positions[stringIndex] === null
         ) {
           console.log(`🎸 Skipping muted string ${stringIndex + 1}`);
           stringIndex += 1;
@@ -178,7 +163,7 @@ export default function Lesson1() {
             let nextIndex = stringIndex + 1;
             while (
               nextIndex < 6 &&
-              chord.positions[nextIndex] === null
+              positions[nextIndex] === null
             ) {
               nextIndex += 1;
             }
@@ -235,7 +220,7 @@ export default function Lesson1() {
   }
 
   const nextChord = () => {
-    if (currentChordIndex < chords.length - 1) {
+    if (currentChordIndex < lesson.chords.length - 1) {
       const nextIndex = currentChordIndex + 1;
       setCurrentChordIndex(nextIndex);
       chordIndexRef.current = nextIndex;
@@ -254,8 +239,10 @@ export default function Lesson1() {
     }
   };
 
-  const chord = chords[currentChordIndex];
-  const progress = ((currentChordIndex + 1) / chords.length) * 100;
+  const chord = lesson.chords[chordIndexRef.current];
+  console.log(chord)
+  const positions = fretToList(getFret(chord.key, chord.suffix))
+  const progress = ((currentChordIndex + 1) / lesson.chords.length) * 100;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-sky-200 space-y-5 p-4">
@@ -273,9 +260,11 @@ export default function Lesson1() {
 
       <h2 className="text-xl font-medium text-gray-700">{chord.name}</h2>
 
+      
+
       <GuitarChordDiagram
-        chordName={chord.name}
-        positions={chord.positions}
+        chordName={getChordName(chord.key, chord.suffix)}
+        positions={positions}
         stringStates={stringStates}
       />
 
@@ -283,7 +272,7 @@ export default function Lesson1() {
       {lessonStage === "single" && (
         <div className="text-md text-gray-700 font-medium">
           🎵 Play string {currentStringIndex + 1} (
-          {chord.strings[currentStringIndex]})
+          {standard_tuning[currentStringIndex]})
         </div>
       )}
       {lessonStage === "strum" && (
@@ -319,11 +308,10 @@ export default function Lesson1() {
             onClick={() => {
               // manual skip for testing
               let nextIndex = currentStringIndex + 1;
-              const chord = chords[currentChordIndex];
 
               while (
                 nextIndex < 6 &&
-                chord.positions[nextIndex] === null
+                positions[nextIndex] === null
               ) {
                 nextIndex += 1;
               }
@@ -365,7 +353,7 @@ export default function Lesson1() {
 
         {lessonStage === "done" && (
           <Button
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/lesson-history")}
             className="bg-indigo-500 text-white font-medium py-2 px-4 rounded-lg shadow-md hover:bg-indigo-600"
           >
             Finish Lesson

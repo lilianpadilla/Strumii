@@ -88,6 +88,7 @@ export default function GuitarChordDiagram({ chordName, positions, stringStates 
       .text((d) => d);
 
     // 🎵 Draw fretted dots and muted X
+    console.log(positions)
     positions.forEach((fret, i) => {
       const x = stringSpacing / 2 + i * stringSpacing;
 

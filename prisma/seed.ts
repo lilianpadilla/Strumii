@@ -63,6 +63,12 @@ const getLessons = (): Prisma.LessonCreateInput[] => [
     id: "00000000-0000-0000-0000-000000000001",
     title: "Lesson 1",
     description: "This is lesson 1",
+    chords: [
+      JSON.stringify({
+        key: "A",
+        suffix: "maj"
+      })
+    ],
     createdAt: yesterday,
     updatedAt: yesterday,
     completed: false,
@@ -73,6 +79,20 @@ const getLessons = (): Prisma.LessonCreateInput[] => [
     id: "00000000-0000-0000-0000-000000000002",
     title: "Lesson example: not Completed",
     description: "This is a not-completed lesson",
+    chords: [
+      JSON.stringify({
+        key: "A",
+        suffix: "maj",
+      }),
+      JSON.stringify({
+        key: "C",
+        suffix: "min",
+      }),
+      JSON.stringify({
+        key: "B",
+        suffix: "maj",
+      }),
+    ],
     createdAt: yesterday,
     updatedAt: yesterday,
     completed: false,
@@ -83,6 +103,12 @@ const getLessons = (): Prisma.LessonCreateInput[] => [
     id: "00000000-0000-0000-0000-000000000003",
     title: "Lesson example: Completed Lesson",
     description: "This is a completed lesson",
+    chords: [
+      JSON.stringify({
+        key: "B",
+        suffix: "maj",
+      }),
+    ],
     createdAt: yesterday,
     updatedAt: yesterday,
     completed: true,

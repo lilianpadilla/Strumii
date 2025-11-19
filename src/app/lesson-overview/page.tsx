@@ -3,39 +3,42 @@
 import React from "react";
 import LessonOverview from "./lesson";
 import { caller } from "@/server/api/server";
-import { Lesson } from "@prisma/client";
+import { Lesson, Profile } from "@prisma/client";
 import { z } from "zod";
 import OpenAI from 'openai';
 import { zodResponseFormat } from "openai/helpers/zod";
+
+import suffixes from "~/utils/guitar/suffixes";
+import keys from "~/utils/guitar/keys"
 
 const client = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-export default async function page() {
 
-    const chordList = ["A", "Em", "G", "C", "D", "Am", "F", "B7"] as const;
-    const ChordSchema = z.enum(chordList);
-    const userPreferences = {
-        //connect prefs here
-    }
+export default async function page() {
+  const profile = await caller.profile.getProfile();
+  let prefs = await caller.profile.getUserPreferences({id: profile?.userPreferencesId!});
+    
+    const ChordKeySchema = z.enum(keys);
+    const SuffixSchema = z.enum(suffixes);
+
+    const Chord = z.object({
+      key: ChordKeySchema,
+      suffix: SuffixSchema,
+    })
 
     const Lesson = z.object({
         title: z.string(),
-        // chords: z.string(), //change to look at the chords
-        
-        chords: z.array(ChordSchema),
+        chords: z.array(Chord),
         description: z.array(z.string()),
         expDuration: z.int()
     });
 
     const prompt = {
-        task: "",
-        userPreference: userPreferences
+        task: "Generate a lesson for a single chord or a chord progression for guitar. The description should be very short and concise, take into consideration the length suggested.",
+        userPreference: prefs
     }
-    //figure out how to show the most recent lesson, hard-coded input will be changed 
-    // let lesson: Lesson = await caller.lesson.getLesson('00000000-0000-0000-0000-000000000002');
-
     // Send request to OpenAI to generate Lesson
     const openAiResponse = await client.chat.completions.create({
       response_format: zodResponseFormat(Lesson, "lesson"),
@@ -43,10 +46,6 @@ export default async function page() {
       messages: [
         {
           role: 'system',
-          content: 'Generate a lesson for a single chord or a chord progression for guitar. The description should be very short and concise, summarizing what chords will be taught.',
-        },
-        {
-          role: 'user',
           content: JSON.stringify(prompt),
         },
       ],
@@ -72,6 +71,8 @@ export default async function page() {
     //   return NextResponse.json({ error: 'Invalid response format' }, { status: 500 });
         console.error("Failed to generate Lesson format")
     }
+
+    console.log(lesson)
 
     return(
         <LessonOverview lesson={lesson}/>

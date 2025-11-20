@@ -25,14 +25,14 @@ export default function LessonOverview({lesson}: {lesson: Lesson }) {
     async function handleStartButton() {
         //button should write lesson into database
         console.log(profile.id)
-        const lesson = await createLesson.mutateAsync({
+        const createdLesson = await createLesson.mutateAsync({
             profileId: profile.id,
-            title: "hello",
-            description: "desc",
-            chords: ["A", "C"],
-            expDuration: 5,
+            title: lesson.title,
+            description: lesson.description.join(' '),
+            chords: [JSON.stringify(lesson.chords)], //find out how to make this same format as the other lesson data!
+            expDuration: lesson.expDuration,
         });
-        console.log(lesson)
+        console.log(createdLesson)
         //should direct user to lesson activity for new lesson
     }
 

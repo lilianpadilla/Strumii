@@ -36,7 +36,7 @@ export default async function page() {
     });
 
     const prompt = {
-        task: "Generate a lesson for a single chord or a chord progression for guitar. The description should be very short and concise, take into consideration the length suggested.",
+        task: "Generate a lesson for a single chord or a chord progression for guitar. The description should be very short and concise (2-3 sentences), take into consideration the lesson time length suggested. Do not explain how to finger or strum the chords.",
         userPreference: prefs
     }
     // Send request to OpenAI to generate Lesson

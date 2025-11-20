@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation"
 import { Avatar, AvatarImage } from "@radix-ui/react-avatar";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useAuth } from "~/providers/AuthProvider";
 import { Button } from "~/components/ui/button";
 import { DropdownMenuItem, DropdownMenuLabel } from "~/components/ui/dropdown-menu";

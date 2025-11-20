@@ -31,5 +31,29 @@ export const lessonRouter = createTRPCRouter({
         console.error("Error Fetching Lesson:", error);
         return null
       }
+    }),
+
+  createLesson: privateProcedure
+    .input(z.object({
+      profileId: z.string(),
+      title: z.string(),
+      description: z.string(),
+      chords: z.array(z.string()),
+      expDuration: z.number(),
+    })
+    )
+    .mutation(async ({input, ctx}) => {
+      // console.log("Creating new lesson")
+
+      const lesson = await ctx.db.lesson.create({
+        data: {
+          title: input.title,
+          description: input.description,
+          chords: input.chords,
+          expDuration: input.expDuration,
+          profileId: input.profileId
+        },
+      })
+      return lesson
     })
 });

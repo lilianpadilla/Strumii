@@ -6,15 +6,34 @@ import { Card } from "~/components/ui/card";
 import { Textarea } from "~/components/ui/textarea";
 import { Button } from "~/components/ui/button"
 import { Lesson } from "./types"
+import { trpc } from '~/server/api/client';
+import { useAuth } from "~/providers/AuthProvider"
 // import { Lesson } from "@prisma/client";
 
 export default function LessonOverview({lesson}: {lesson: Lesson }) {
-     const [text, setText] = useState("") 
+    const { profile } = useAuth()
+    const [text, setText] = useState("") 
+    const createLesson = trpc.lesson.createLesson.useMutation();
+
 
     function handleButton() {
         console.log("The User prompted: " + text)
         setText("")
         //regenerate a new lesson and display the newly generated lesson
+    }
+
+    async function handleStartButton() {
+        //button should write lesson into database
+        console.log(profile.id)
+        const lesson = await createLesson.mutateAsync({
+            profileId: profile.id,
+            title: "hello",
+            description: "desc",
+            chords: ["A", "C"],
+            expDuration: 5,
+        });
+        console.log(lesson)
+        //should direct user to lesson activity for new lesson
     }
 
      return ( 
@@ -35,7 +54,7 @@ export default function LessonOverview({lesson}: {lesson: Lesson }) {
                     <CardContent>{lesson.expDuration} Minutes</CardContent> 
                 </CardHeader>
             </Card>
-            <Button className="bg-[#93CAD7] hover:bg-[#6a96a1]">Start Lesson!</Button>
+            <Button onClick={handleStartButton} className="bg-[#93CAD7] hover:bg-[#6a96a1]">Start Lesson!</Button>
             <Textarea className="bg-gray-200 mt-12 resize-none" value={text} onChange={(e) => setText(e.target.value)} placeholder="Have a suggestion? Let me know!"></Textarea>
             <Button onClick={handleButton} className="bg-[#93CAD7] hover:bg-[#6a96a1]">Suggest</Button>
         </div>

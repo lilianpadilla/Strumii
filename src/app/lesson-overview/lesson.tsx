@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"; 
 import { CardContent, CardHeader, CardTitle } from "~/components/ui/card"; 
+import { useRouter } from "next/navigation";
 import { Card } from "~/components/ui/card"; 
 import { Textarea } from "~/components/ui/textarea";
 import { Button } from "~/components/ui/button"
@@ -14,6 +15,7 @@ export default function LessonOverview({lesson}: {lesson: Lesson }) {
     const { profile } = useAuth()
     const [text, setText] = useState("") 
     const createLesson = trpc.lesson.createLesson.useMutation();
+    const router = useRouter();
 
 
     function handleButton() {
@@ -29,11 +31,12 @@ export default function LessonOverview({lesson}: {lesson: Lesson }) {
             profileId: profile.id,
             title: lesson.title,
             description: lesson.description.join(' '),
-            chords: [JSON.stringify(lesson.chords)], //find out how to make this same format as the other lesson data!
+            chords: lesson.chords.map((c) => JSON.stringify(c)),
             expDuration: lesson.expDuration,
         });
         console.log(createdLesson)
         //should direct user to lesson activity for new lesson
+        router.push(`/lesson/${createdLesson.id}`);
     }
 
      return ( 

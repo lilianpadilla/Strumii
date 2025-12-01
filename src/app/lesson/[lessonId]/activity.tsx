@@ -6,7 +6,7 @@ import { Button } from "~/components/ui/button";
 import { useRouter } from "next/navigation";
 // import { chords as chords2 } from "@tombatossals/chords-db";
 import chords from "~/utils/guitar"
-import { getFret, fretToList, getChordName } from "~/utils/chord-db-utils"
+import { getFret, fretToList, getChordName, getAllChords, getAllSuffixes, getPitchFromPositionAndString } from "~/utils/chord-db-utils"
 // console.log(chords)
 // console.log(chords.chords.C[2].positions[0].frets)
 
@@ -146,7 +146,10 @@ export default function LessonActivity({ lesson }: {lesson: any}) {
         }
 
         if (confidence > 0.7 && pitch > 40 && pitch < 600) {
-          const expectedPitch = chord.expectedFreqs[stringIndex];
+          // const expectedPitch = chord.expectedFreqs[stringIndex];
+          const stringPosition = positions[stringIndex];
+          const stringNote = standard_tuning[stringIndex];
+          const expectedPitch = getPitchFromPositionAndString(stringPosition, stringNote)
           const tolerance = 3;
 
           if (Math.abs(pitch - expectedPitch) < tolerance) {
@@ -242,7 +245,11 @@ export default function LessonActivity({ lesson }: {lesson: any}) {
   const chord = lesson.chords[chordIndexRef.current];
   console.log(chord)
   const positions = fretToList(getFret(chord.key, chord.suffix))
-  const progress = ((currentChordIndex + 1) / lesson.chords.length) * 100;
+  const progress =
+    lessonStage === "done"
+      ? 100
+      : (currentChordIndex / lesson.chords.length) * 100;
+
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-sky-200 space-y-5 p-4">

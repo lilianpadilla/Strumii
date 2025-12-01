@@ -4,7 +4,10 @@ import { caller } from "@/server/api/server";
 
 import LessonActivity from "./activity";
 
-export default async function Page() {
+export default async function Page({ params }: { params: Promise<{ lessonId: string }> }) {
+
+    const { lessonId } = await params
+    console.log(lessonId)
 
   // let lessons = await caller.lesson.getLesson();
   // console.log(lessons)

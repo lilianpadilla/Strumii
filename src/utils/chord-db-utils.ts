@@ -1,8 +1,11 @@
 import chords from "~/utils/guitar"
+
+const { Interval } = require("tonal");
+const { Note } = require("tonal");
 // console.log(chords)
 
 // https://fretboardfrenzy.com/guitar-tuning-frequencies-charts/
-const standardOpenFreqs = [82.4, 110.0, 146.83, 196.0, 246.94, 329.6];
+// const standardOpenFreqs = [82.4, 110.0, 146.83, 196.0, 246.94, 329.6];
 
 
 export function getChordName(key: string, suffix: string): string {
@@ -43,28 +46,8 @@ export function fretToList(fret: string): (number | null)[] {
 }
 
 export function getPitchFromPositionAndString(stringPosition, stringNote) {
-  const newStringPosition = `${stringPosition}P`;
-  const newStringNote = stringNote.toLowerCase()
-
-
-
-  return null;
+  const newInterval= Interval.fromSemitones(stringPosition); // will be like 5P
+  const newTransposedNote = Note.transpose(stringNote,newInterval); //like transpose (E4, 5p)
+  const newFreq = Note.freq(newTransposedNote);
+  return newFreq;
 }
-// export function getExpectedFreqs(
-//   key: string,
-//   suffix: string
-// ): (number | null)[] {
-//   const fretStr = getFret(key, suffix);
-//   if (!fretStr) {
-//     // fallback: all nulls if chord not found
-//     return Array(6).fill(null);
-//   }
-
-//   const positions = fretToList(fretStr);
-
-//   return positions.map((fret, stringIndex) => {
-//     if (fret === null) return null; // muted string
-//     const openFreq = standardOpenFreqs[stringIndex];
-//     return openFreq * Math.pow(2, fret / 12);
-//   });
-// }
